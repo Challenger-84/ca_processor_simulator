@@ -24,5 +24,5 @@ public class OperandFetch {
 			OF_EX_Latch.setEX_enable(true);
 		}
 	}
-
+	
 }
