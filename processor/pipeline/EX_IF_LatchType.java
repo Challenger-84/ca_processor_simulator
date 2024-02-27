@@ -27,7 +27,7 @@ public class EX_IF_LatchType {
 		return BranchTaken;
 	}
 	
-	public void set_BranchTaken(boolean val) {
+	public void setBranchTaken(boolean val) {
 		BranchTaken = val;
 	}
 	
@@ -35,7 +35,7 @@ public class EX_IF_LatchType {
 		return branchTarget;
 	}
 	
-	public void set_branchTarget(int target) {
+	public void setbranchTarget(int target) {
 		branchTarget = target;
 	}
 
