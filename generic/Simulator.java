@@ -3,6 +3,12 @@ package generic;
 import processor.Clock;
 import processor.Processor;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.io.DataInputStream;
+
 public class Simulator {
 		
 	static Processor processor;
@@ -18,16 +24,31 @@ public class Simulator {
 	
 	static void loadProgram(String assemblyProgramFile)
 	{
-		/*
-		 * TODO
-		 * 1. load the program into memory according to the program layout described
-		 *    in the ISA specification
-		 * 2. set PC to the address of the first instruction in the main
-		 * 3. set the following registers:
-		 *     x0 = 0
-		 *     x1 = 65535
-		 *     x2 = 65535
-		 */
+				
+		// Setting up the Register File
+		processor.getRegisterFile().setValue(0, 0);
+		processor.getRegisterFile().setValue(1, 65535);
+		processor.getRegisterFile().setValue(2, 65535);
+
+		
+		// Reading the .obj file and putting all the instructions in memory
+		File file = new File(assemblyProgramFile);
+		try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
+			// Getting the PC value and setting PC to it
+			int pc_val = dis.readInt();
+			processor.getRegisterFile().setProgramCounter(pc_val);
+			
+			int index = 0;
+			while (true) {
+				int value = dis.readInt();
+				processor.getMainMemory().setWord(index, value);
+		        index++;
+			}
+	    
+		} catch (EOFException eof) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void simulate()
@@ -40,6 +61,8 @@ public class Simulator {
 			processor.getMAUnit().performMA();
 			processor.getRWUnit().performRW();
 			Clock.incrementClock();
+			
+			simulationComplete = true;
 		}
 		
 		// TODO
