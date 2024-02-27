@@ -30,5 +30,17 @@ public class InstructionFetch {
 			IF_OF_Latch.setOF_enable(true);
 		}
 	}
+	
+	public void performBranch() 
+	{
+		if(EX_IF_Latch.isIF_enable()) 
+		{
+			if (EX_IF_Latch.isBranchTaken()) {
+				containingProcessor.getRegisterFile().setProgramCounter(EX_IF_Latch.branchTarget());
+			}
+			
+		}
+		
+	}
 
 }
