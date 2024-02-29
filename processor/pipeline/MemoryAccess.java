@@ -33,6 +33,7 @@ public class MemoryAccess {
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
 			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUEesult());
 			MA_RW_Latch.setRW_enable(true);
+			EX_MA_Latch.setMA_enable(false);
 			
 		}
 	}
