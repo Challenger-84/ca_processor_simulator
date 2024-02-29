@@ -37,6 +37,7 @@ public class InstructionFetch {
 		{
 			if (EX_IF_Latch.isBranchTaken()) {
 				containingProcessor.getRegisterFile().setProgramCounter(EX_IF_Latch.branchTarget());
+				EX_IF_Latch.setIF_enable(false);
 			}
 			
 		}

@@ -16,7 +16,26 @@ public class MemoryAccess {
 	
 	public void performMA()
 	{
-		//TODO
+		if (EX_MA_Latch.isMA_enable()) {
+			
+			if (EX_MA_Latch.controlSignals().isLd()) {
+				
+				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUEesult());
+				MA_RW_Latch.setLoadResult(ldResult);
+			}
+			
+			if (EX_MA_Latch.controlSignals().isSt()) {
+			
+				containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUEesult(), EX_MA_Latch.storeVal());
+			}
+			
+			// Passing all the other values to Latch
+			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
+			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUEesult());
+			MA_RW_Latch.setRW_enable(true);
+			EX_MA_Latch.setMA_enable(false);
+			
+		}
 	}
 
 }
