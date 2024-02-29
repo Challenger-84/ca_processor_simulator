@@ -1,5 +1,7 @@
 package generic;
 
+import java.util.HashMap;
+
 public class ControlSignals {
 
 	boolean isSt;
@@ -18,6 +20,8 @@ public class ControlSignals {
 	boolean isUBranch;
 	
 	boolean isEnd;
+	
+	HashMap<String, Boolean> aluSignals = new HashMap<>();
 
 	public ControlSignals() {
 		this.isSt = false;
@@ -33,6 +37,18 @@ public class ControlSignals {
         this.isUBranch = false;
         
         this.isEnd = false;
+        
+    	aluSignals.put("add", false);
+    	aluSignals.put("sub", false);
+    	aluSignals.put("mul", false);
+    	aluSignals.put("div", false);
+    	aluSignals.put("and", false);
+    	aluSignals.put("or", false);
+    	aluSignals.put("xor", false);
+    	aluSignals.put("slt", false);
+    	aluSignals.put("sll", false);
+    	aluSignals.put("srl", false);
+    	aluSignals.put("sra", false);
 	}
 	
 	// Getters
@@ -131,5 +147,17 @@ public class ControlSignals {
 
     public void setBlt(boolean isBlt) {
         this.isBlt = isBlt;
+    }
+    
+    public HashMap<String, Boolean> getALUSignals() {
+    	return aluSignals;
+    }
+    
+    public void enableALUSignal(String operation){
+    	if (aluSignals.containsKey(operation)){
+    		aluSignals.put(operation, true);
+    	} else {
+    		System.out.println("Unexpected ALU Signal");
+    	}
     }
 }

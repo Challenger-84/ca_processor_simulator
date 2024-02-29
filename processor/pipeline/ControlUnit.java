@@ -14,6 +14,12 @@ public class ControlUnit {
 			OperationType.jmp, OperationType.beq, OperationType.bne, OperationType.blt, 
 			OperationType.bgt, OperationType.end};
 	
+	OperationType[] immOperations = {
+		    OperationType.addi, OperationType.subi, OperationType.muli, OperationType.divi,
+		    OperationType.andi, OperationType.ori, OperationType.xori, OperationType.slti,
+		    OperationType.slli, OperationType.srli, OperationType.srai
+		};
+	
 
 	public ControlSignals getControlSignals(int opcode) {
 		
@@ -21,42 +27,94 @@ public class ControlUnit {
 		
 		ControlSignals signals = new ControlSignals();
 		
+		for (OperationType operation : immOperations) {
+			if (operation == op) {
+				signals.setImmediate(true);
+				op = operator[opcode - 1];
+			}
+		}
+
 		switch (op) {
-        case OperationType.load:
-            signals.setLd(true);
-            break;
+		    case add:
+		        signals.enableALUSignal("add");
+	
+		    case sub:
+		        signals.enableALUSignal("sub");
+		        break;
 
-        case OperationType.store:
-            signals.setSt(true);
-            break;
+		    case mul:
+		        signals.enableALUSignal("mul");
+		        break;
 
-        case OperationType.jmp:
-            signals.setUBranch(true);
-            break;
+		    case div:
+		        signals.enableALUSignal("div");
+		        break;
 
-        case OperationType.beq:
-        	signals.setBeq(true);
-            break;
+		    case and:
+		        signals.enableALUSignal("and");
+		        break;
 
-        case OperationType.bne:
-            signals.setBne(true);
-            break;
+		    case or:
+		        signals.enableALUSignal("or");
+		        break;
 
-        case OperationType.blt:
-            signals.setBlt(true);
-            break;
+		    case xor:
+		        signals.enableALUSignal("xor");
+		        break;
 
-        case OperationType.bgt:
-            signals.setBgt(true);
-            break;
+		    case slt:
+		        signals.enableALUSignal("slt");
+		        break;
 
-        case OperationType.end:
-            signals.setEnd(true);
-            break;
-            
-        default:
-        	break;
-    }
+		    case sll:
+		        signals.enableALUSignal("sll");
+		        break;
+
+		    case srl:
+		        signals.enableALUSignal("srl");
+		        break;
+
+		    case sra:
+		        signals.enableALUSignal("sra");
+		        break;
+	
+		    case load:
+		        signals.setLd(true);
+		        break;
+	
+		    case store:
+		        signals.setSt(true);
+		        break;
+	
+		    case jmp:
+		        signals.setUBranch(true);
+		        break;
+	
+		    case beq:
+		        signals.setBeq(true);
+		        break;
+	
+		    case bne:
+		        signals.setBne(true);
+		        break;
+	
+		    case blt:
+		        signals.setBlt(true);
+		        break;
+	
+		    case bgt:
+		        signals.setBgt(true);
+		        break;
+	
+		    case end:
+		        signals.setEnd(true);
+		        break;
+		        
+		    default:
+		    	System.out.println("Unexpected Operation Type!");
+		    	break;
+	}
+
 
     return signals;
 	}
