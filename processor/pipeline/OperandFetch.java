@@ -16,6 +16,7 @@ public class OperandFetch {
 		this.containingProcessor = containingProcessor;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.OF_EX_Latch = oF_EX_Latch;
+		this.control_unit = new ControlUnit();
 	}
 	
 	public void performOF()
@@ -27,41 +28,39 @@ public class OperandFetch {
 			String inst_string = Integer.toBinaryString(instruction);
 
 			//5bit to control unit 
-			int opcode = Integer.parseInt(inst_string.substring(0,5));
+			int opcode = Integer.parseInt(inst_string.substring(0,5), 2);
 			ControlSignals control = control_unit.getControlSignals(opcode);
 			
 			//imm operands
 			//immx
 			String immx_18 = inst_string.substring(14);
-			String immx_32;
-			if(immx_18.charAt(0)== '0'){
-				immx_32 = '0'*(32-18) + immx_18;
-			}
-			else{
-				immx_32 = '1'*(32-18) + immx_18;
-			} 
-			int immx = Integer.parseInt(immx_32);
-			OF_EX_Latch.setImmx(immx);
-			
+//			String immx_32;
+//			if(immx_18.charAt(0)== '0'){
+//				immx_32 = '0'*(32-18) + immx_18;
+//			}
+//			else{
+//				immx_32 = '1'*(32-18) + immx_18;
+//			} 
+			int immx = Integer.parseInt(immx_18);
+	
 			//branchTarget
 			String offset_27 = inst_string.substring(5);
-			String offset_32;
-			if(offset_27.charAt(0)== '0'){
-				offset_32 = '0'*(32-27) + offset_27;
-			}
-			else{
-				offset_32 = '1'*(32-27) + offset_27;
-			} 
-			int offset = Integer.parseInt(offset_32);
+//			String offset_32;
+//			if(offset_27.charAt(0)== '0'){
+//				offset_32 = '0'*(32-27) + offset_27;
+//			}
+//			else{
+//				offset_32 = '1'*(32-27) + offset_27;
+//			} 
+			int offset = Integer.parseInt(offset_27, 2);
 
 			//add pc and offset then store in OF_EX latch
-			int branch_target_value = Integer.parseUnsignedInt(offset_32, 2) + currentPC;
-			String branch_targeString = Integer.toBinaryString(branch_target_value);
-			if (branch_targeString.length() != 32) {
-				branch_targeString = '0'*(32-branch_targeString.length()) + branch_targeString;
-			}
-			int branchTarget = Integer.parseInt(branch_targeString);
-			OF_EX_Latch.setBranchTarget(branchTarget);
+			int branchTarget = offset + currentPC;
+//			String branch_targeString = Integer.toBinaryString(branch_target_value);
+//			if (branch_targeString.length() != 32) {
+//				branch_targeString = '0'*(32-branch_targeString.length()) + branch_targeString;
+//			}
+//			int branchTarget = Integer.parseInt(branch_targeString);
 			
 		    //reg operands
 			String rs1String = inst_string.substring(10,15);
@@ -71,19 +70,18 @@ public class OperandFetch {
 			int rp1;
 			int rp2;
 
-			rp1 = Integer.parseInt(rs1String);
+			rp1 = Integer.parseUnsignedInt(rs1String, 2);
 
+			
 			if(control.isSt() == false){
-				rp2 = Integer.parseInt(rs2String);
+				rp2 = Integer.parseUnsignedInt(rs2String, 2);
 			}
 			else{
-				rp2 =  Integer.parseInt(rdString);
+				rp2 =  Integer.parseUnsignedInt(rdString, 2);
 			}
-
+			
 			int op1 = containingProcessor.getRegisterFile().getValue(rp1);
 			int op2 = containingProcessor.getRegisterFile().getValue(rp2);
-			OF_EX_Latch.setOp1(op1);
-			OF_EX_Latch.setOp2(op2);
 
 			//stop processor add below !!!!!
 			if (control.isEnd()) {
@@ -92,6 +90,13 @@ public class OperandFetch {
 
 			
 			OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+			OF_EX_Latch.setOp1(op1);
+			OF_EX_Latch.setOp2(op2);
+			OF_EX_Latch.setBranchTarget(branchTarget);
+			OF_EX_Latch.setImmx(immx);
+			OF_EX_Latch.setControl(control);
+			OF_EX_Latch.setInstruction(instruction);
+			
 			
 			IF_OF_Latch.setOF_enable(false);
 			OF_EX_Latch.setEX_enable(true);

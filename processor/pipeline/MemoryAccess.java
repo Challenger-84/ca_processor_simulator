@@ -32,6 +32,9 @@ public class MemoryAccess {
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
 			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUEesult());
+			MA_RW_Latch.setPC(EX_MA_Latch.getPC());
+			MA_RW_Latch.setInstruction(EX_MA_Latch.getInstruction());
+			
 			MA_RW_Latch.setRW_enable(true);
 			EX_MA_Latch.setMA_enable(false);
 			
