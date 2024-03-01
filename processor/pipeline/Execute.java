@@ -21,6 +21,9 @@ public class Execute {
 	public void performEX()
 	{
 		//TODO
+		
+		EX_MA_Latch.setMA_enable(true);
+		OF_EX_Latch.setEX_enable(false);
 	}
 
 	
