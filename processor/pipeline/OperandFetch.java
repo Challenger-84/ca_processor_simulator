@@ -26,9 +26,6 @@ public class OperandFetch {
 			int instruction = IF_OF_Latch.getInstruction();
 			String inst_string = Integer.toBinaryString(instruction);
 
-			//pc
-			OF_EX_Latch.setPC(currentPC);
-
 			//5bit to control unit 
 			int opcode = Integer.parseInt(inst_string.substring(0,5));
 			ControlSignals control = control_unit.getControlSignals(opcode);
@@ -56,6 +53,7 @@ public class OperandFetch {
 				offset_32 = '1'*(32-27) + offset_27;
 			} 
 			int offset = Integer.parseInt(offset_32);
+
 			//add pc and offset then store in OF_EX latch
 			int branch_target_value = Integer.parseUnsignedInt(offset_32, 2) + currentPC;
 			String branch_targeString = Integer.toBinaryString(branch_target_value);
@@ -66,9 +64,9 @@ public class OperandFetch {
 			OF_EX_Latch.setBranchTarget(branchTarget);
 			
 		    //reg operands
-			String rs1String = inst_string.substring(10,13);
-			String rs2String = inst_string.substring(14,17);
-			String rdString = inst_string.substring(6,9);
+			String rs1String = inst_string.substring(10,15);
+			String rs2String = inst_string.substring(15,20);
+			String rdString = inst_string.substring(5,10);
 
 			int rp1;
 			int rp2;
@@ -87,7 +85,7 @@ public class OperandFetch {
 			OF_EX_Latch.setOp1(op1);
 			OF_EX_Latch.setOp2(op2);
 
-			//stop processor
+			//stop processor add below !!!!!
 			if (control.isEnd()) {
 				Simulator.setSimulationComplete(true);
 			}
