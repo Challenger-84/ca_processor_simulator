@@ -62,6 +62,7 @@ public class Execute {
 		EX_MA_Latch.setPC(OF_EX_Latch.getPC());
 		EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
 		EX_MA_Latch.setControlSignals(control);
+
 		
 		EX_MA_Latch.setMA_enable(true);
 		OF_EX_Latch.setEX_enable(false);

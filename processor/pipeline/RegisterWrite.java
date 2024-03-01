@@ -21,29 +21,25 @@ public class RegisterWrite {
 		if(MA_RW_Latch.isRW_enable())
 		{
 			ControlSignals signals = MA_RW_Latch.controlSignals();
+			int instruction = MA_RW_Latch.getInstruction();
+			String inst_string = Integer.toBinaryString(instruction);
 			
+			//gets adress
 			int address;
-			if (signals.isCall()){
-				// TODO: Implement getting address from either rd or ra
-				address = 0;
-			}else {
-				address = 0;
-			}
+			String rdString = inst_string.substring(5,10);
+			address = Integer.parseInt(rdString);
 			
+			//gets data
 			int data;
-			if (signals.isLd() && signals.isCall()) {
-				data = MA_RW_Latch.ALUResult();
-			} else if (signals.isLd() && !signals.isCall()) {
+			if (signals.isLd()) {
 				data = MA_RW_Latch.LoadResult();
 			} else {
-				// TODO: Do PC + 4
-				data = 4;
+				data = MA_RW_Latch.ALUResult();
 			}
 			
 			if (signals.isWb()) {
 				containingProcessor.getRegisterFile().setValue(address, data);
 			}
-			
 			
 			MA_RW_Latch.setRW_enable(false);
 			IF_EnableLatch.setIF_enable(true);
