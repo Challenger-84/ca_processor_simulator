@@ -24,6 +24,8 @@ public class InstructionFetch {
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
 			int newInstruction = containingProcessor.getMainMemory().getWord(currentPC);
 			IF_OF_Latch.setInstruction(newInstruction);
+			IF_OF_Latch.setPC(currentPC);
+			
 			containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
 			
 			IF_EnableLatch.setIF_enable(false);

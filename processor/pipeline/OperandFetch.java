@@ -96,6 +96,8 @@ public class OperandFetch {
 			}
 
 			
+			OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+			
 			IF_OF_Latch.setOF_enable(false);
 			OF_EX_Latch.setEX_enable(true);
 		}

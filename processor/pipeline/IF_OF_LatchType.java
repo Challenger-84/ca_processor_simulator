@@ -3,6 +3,7 @@ package processor.pipeline;
 public class IF_OF_LatchType {
 	
 	boolean OF_enable;
+	int pc;
 	int instruction;
 	
 	public IF_OF_LatchType()
@@ -25,5 +26,13 @@ public class IF_OF_LatchType {
 	public void setInstruction(int instruction) {
 		this.instruction = instruction;
 	}
+	
+	public int getPC() {
+        return pc;
+    }
+	
+	public void setPC(int pc) {
+        this.pc = pc;
+    }
 
 }
