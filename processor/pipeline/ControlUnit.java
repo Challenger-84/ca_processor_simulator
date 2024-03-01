@@ -27,6 +27,7 @@ public class ControlUnit {
 		
 		ControlSignals signals = new ControlSignals();
 		
+		// Checking for alu operations ending with i
 		for (OperationType operation : immOperations) {
 			if (operation == op) {
 				signals.setImmediate(true);
@@ -37,53 +38,68 @@ public class ControlUnit {
 		switch (op) {
 		    case add:
 		        signals.enableALUSignal("add");
+		        signals.setWb(true);
+		        break;
 	
 		    case sub:
 		        signals.enableALUSignal("sub");
+		        signals.setWb(true);
 		        break;
 
 		    case mul:
 		        signals.enableALUSignal("mul");
+		        signals.setWb(true);
 		        break;
 
 		    case div:
 		        signals.enableALUSignal("div");
+		        signals.setWb(true);
 		        break;
 
 		    case and:
 		        signals.enableALUSignal("and");
+		        signals.setWb(true);
 		        break;
 
 		    case or:
 		        signals.enableALUSignal("or");
+		        signals.setWb(true);
 		        break;
 
 		    case xor:
 		        signals.enableALUSignal("xor");
+		        signals.setWb(true);
 		        break;
 
 		    case slt:
 		        signals.enableALUSignal("slt");
+		        signals.setWb(true);
 		        break;
 
 		    case sll:
 		        signals.enableALUSignal("sll");
+		        signals.setWb(true);
 		        break;
 
 		    case srl:
 		        signals.enableALUSignal("srl");
+		        signals.setWb(true);
 		        break;
 
 		    case sra:
 		        signals.enableALUSignal("sra");
+		        signals.setWb(true);
 		        break;
 	
 		    case load:
 		        signals.setLd(true);
+		        signals.setWb(true);
+		        signals.enableALUSignal("add");
 		        break;
 	
 		    case store:
 		        signals.setSt(true);
+		        signals.enableALUSignal("add");
 		        break;
 	
 		    case jmp:

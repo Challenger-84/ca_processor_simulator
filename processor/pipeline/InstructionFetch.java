@@ -30,6 +30,8 @@ public class InstructionFetch {
 			
 			IF_EnableLatch.setIF_enable(false);
 			IF_OF_Latch.setOF_enable(true);
+			
+			System.out.println("cur inst: " + Integer.toBinaryString(newInstruction));
 		}
 	}
 	
@@ -39,6 +41,8 @@ public class InstructionFetch {
 		{
 			if (EX_IF_Latch.isBranchTaken()) {
 				containingProcessor.getRegisterFile().setProgramCounter(EX_IF_Latch.branchTarget());
+				System.out.println("Branch Target: ");
+				System.out.println(containingProcessor.getRegisterFile().getProgramCounter());
 				EX_IF_Latch.setIF_enable(false);
 			}
 			

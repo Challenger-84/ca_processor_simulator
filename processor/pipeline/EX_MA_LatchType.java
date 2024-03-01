@@ -54,7 +54,7 @@ public class EX_MA_LatchType {
 		controlSignals = signals;
 	}
 	
-	public int ALUEesult() {
+	public int ALUResult() {
 		return ALUresult;
 	}
 	

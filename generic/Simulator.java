@@ -59,6 +59,7 @@ public class Simulator {
 			processor.getIFUnit().performIF();
 			processor.getOFUnit().performOF();
 			processor.getEXUnit().performEX();
+			processor.getIFUnit().performBranch();
 			processor.getMAUnit().performMA();
 			processor.getRWUnit().performRW();
 			Clock.incrementClock();

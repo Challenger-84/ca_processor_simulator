@@ -23,37 +23,48 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
-			int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
+			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
-			String inst_string = Integer.toBinaryString(instruction);
-
+			String inst_str = Integer.toBinaryString(instruction);
+			String inst_string = inst_str;
+			if (inst_str.length() != 32) {
+				inst_string = "0".repeat(32-inst_str.length()) + inst_str;
+			}
+			
 			//5bit to control unit 
 			int opcode = Integer.parseInt(inst_string.substring(0,5), 2);
 			ControlSignals control = control_unit.getControlSignals(opcode);
 			
 			//imm operands
 			//immx
-			String immx_18 = inst_string.substring(14);
-//			String immx_32;
-//			if(immx_18.charAt(0)== '0'){
-//				immx_32 = '0'*(32-18) + immx_18;
-//			}
-//			else{
-//				immx_32 = '1'*(32-18) + immx_18;
-//			} 
-			int immx = Integer.parseInt(immx_18);
+			String immx_18 = inst_string.substring(15);
+			String immx_32;
+			if(immx_18.charAt(0)== '0'){
+				immx_32 = "0".repeat(32-17) + immx_18;
+			}
+			else{
+				immx_32 = "1".repeat(32-17) + immx_18;
+			} 
+			int immx = Integer.parseUnsignedInt(immx_32, 2);
 	
 			//branchTarget
-			String offset_27 = inst_string.substring(5);
-//			String offset_32;
-//			if(offset_27.charAt(0)== '0'){
-//				offset_32 = '0'*(32-27) + offset_27;
-//			}
-//			else{
-//				offset_32 = '1'*(32-27) + offset_27;
-//			} 
-			int offset = Integer.parseInt(offset_27, 2);
-
+			int offset;
+			if (control.isUBranch()) {
+				String offset_str = inst_string.substring(10);
+				String offset_32;
+				if(offset_str.charAt(0)== '0'){
+					offset_32 = "0".repeat(10) + offset_str;
+				}
+				else{
+					offset_32 = "1".repeat(10) + offset_str;
+				} 
+				offset = Integer.parseUnsignedInt(offset_32, 2);
+			} else {
+				offset = immx;
+			}
+//			System.out.println("offset22 " + (offset_22));
+//			System.out.println("offset32 " + (offset_32));
+//			System.out.println(offset);
 			//add pc and offset then store in OF_EX latch
 			int branchTarget = offset + currentPC;
 //			String branch_targeString = Integer.toBinaryString(branch_target_value);
@@ -63,9 +74,9 @@ public class OperandFetch {
 //			int branchTarget = Integer.parseInt(branch_targeString);
 			
 		    //reg operands
-			String rs1String = inst_string.substring(10,15);
-			String rs2String = inst_string.substring(15,20);
-			String rdString = inst_string.substring(5,10);
+			String rs1String = inst_string.substring(5,10);
+			String rs2String = inst_string.substring(10,15);
+			String rdString = inst_string.substring(15,20);
 
 			int rp1;
 			int rp2;

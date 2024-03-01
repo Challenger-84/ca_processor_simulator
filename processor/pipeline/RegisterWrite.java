@@ -23,11 +23,19 @@ public class RegisterWrite {
 			ControlSignals signals = MA_RW_Latch.controlSignals();
 			int instruction = MA_RW_Latch.getInstruction();
 			String inst_string = Integer.toBinaryString(instruction);
+			if (inst_string.length() != 32) {
+				inst_string = "0".repeat(32-inst_string.length()) + inst_string;
+			}
 			
 			//gets adress
 			int address;
-			String rdString = inst_string.substring(5,10);
-			address = Integer.parseInt(rdString);
+			String rdString;
+			if (signals.isImmediate()) {
+				rdString = inst_string.substring(10,15);
+			} else {
+				rdString = inst_string.substring(15,20);
+			}
+			address = Integer.parseInt(rdString, 2);
 			
 			//gets data
 			int data;

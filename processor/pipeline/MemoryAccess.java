@@ -20,18 +20,21 @@ public class MemoryAccess {
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				
-				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUEesult());
+				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
 				MA_RW_Latch.setLoadResult(ldResult);
 			}
 			
 			if (EX_MA_Latch.controlSignals().isSt()) {
 			
-				containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUEesult(), EX_MA_Latch.storeVal());
+				System.out.println("Storing");
+				System.out.println(EX_MA_Latch.ALUResult());
+				System.out.println(EX_MA_Latch.storeVal());
+				containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
 			}
 			
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
-			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUEesult());
+			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUResult());
 			MA_RW_Latch.setPC(EX_MA_Latch.getPC());
 			MA_RW_Latch.setInstruction(EX_MA_Latch.getInstruction());
 			
