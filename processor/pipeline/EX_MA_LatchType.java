@@ -6,6 +6,9 @@ public class EX_MA_LatchType {
 	
 	boolean MA_enable;
 	
+	int pc;
+	int instruction;
+	
 	int ALUresult;
 	
 	int storeVal;
@@ -25,6 +28,22 @@ public class EX_MA_LatchType {
 
 	public void setMA_enable(boolean mA_enable) {
 		MA_enable = mA_enable;
+	}
+	
+	public int getPC() {
+        return pc;
+    }
+	
+	public void setPC(int pc) {
+        this.pc = pc;
+    }
+	
+	public int getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(int instruction) {
+		this.instruction = instruction;
 	}
 	
 	public ControlSignals controlSignals() {

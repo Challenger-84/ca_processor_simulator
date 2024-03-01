@@ -5,6 +5,9 @@ import generic.ControlSignals;
 public class MA_RW_LatchType {
 	
 	boolean RW_enable;
+		
+	int pc;
+	int instruction;
 	
 	int ldResult;
 	int ALUresult;
@@ -25,6 +28,22 @@ public class MA_RW_LatchType {
 		RW_enable = rW_enable;
 	}
 
+	public int getPC() {
+        return pc;
+    }
+	
+	public void setPC(int pc) {
+        this.pc = pc;
+    }
+	
+	public int getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(int instruction) {
+		this.instruction = instruction;
+	}
+	
 	public int LoadResult() {
 		return ldResult;
 	}
