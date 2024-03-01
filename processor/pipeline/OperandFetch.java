@@ -26,6 +26,9 @@ public class OperandFetch {
 			int instruction = IF_OF_Latch.getInstruction();
 			String inst_string = Integer.toBinaryString(instruction);
 
+			//pc
+			OF_EX_Latch.setPC(currentPC);
+
 			//5bit to control unit 
 			int opcode = Integer.parseInt(inst_string.substring(0,5));
 			ControlSignals control = control_unit.getControlSignals(opcode);
@@ -69,16 +72,10 @@ public class OperandFetch {
 
 			int rp1;
 			int rp2;
-			//add return address register !!!!!
-			int ra=123;
 
-			if(control.isRet() == false){
-				rp1 = Integer.parseInt(rs1String);
-			}
-			else{
-				rp1 = ra;
-			}
-			if( control.isSt() == false){
+			rp1 = Integer.parseInt(rs1String);
+
+			if(control.isSt() == false){
 				rp2 = Integer.parseInt(rs2String);
 			}
 			else{
@@ -90,7 +87,7 @@ public class OperandFetch {
 			OF_EX_Latch.setOp1(op1);
 			OF_EX_Latch.setOp2(op2);
 
-			//stop processor add below !!!!!
+			//stop processor
 			if (control.isEnd()) {
 				Simulator.setSimulationComplete(true);
 			}
