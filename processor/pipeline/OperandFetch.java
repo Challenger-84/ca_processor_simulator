@@ -2,6 +2,7 @@ package processor.pipeline;
 
 import generic.ControlSignals;
 import processor.Processor;
+import generic.Simulator;
 
 public class OperandFetch {
 	Processor containingProcessor;
@@ -21,10 +22,9 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
-			//TODO
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
 			int instruction = IF_OF_Latch.getInstruction();
-			String inst_string = Integer.toString(instruction);
+			String inst_string = Integer.toBinaryString(instruction);
 
 			//5bit to control unit 
 			int opcode = Integer.parseInt(inst_string.substring(0,5));
@@ -91,7 +91,9 @@ public class OperandFetch {
 			OF_EX_Latch.setOp2(op2);
 
 			//stop processor add below !!!!!
-
+			if (control.isEnd()) {
+				Simulator.setSimulationComplete(true);
+			}
 
 			
 			IF_OF_Latch.setOF_enable(false);

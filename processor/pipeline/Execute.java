@@ -1,5 +1,7 @@
 package processor.pipeline;
 
+import java.util.HashMap;
+
 import processor.Processor;
 
 public class Execute {
@@ -19,22 +21,14 @@ public class Execute {
 	public void performEX()
 	{
 		//TODO
-		ArithmeticLogicUnit("add", 1, 2);
 	}
 
 	
-	private int ArithmeticLogicUnit(String signal, int op1, int op2) {
-		
-		switch (signal){
-		case "add":
-			return op1 + op2;
-		case "sub":
-			return op1 - op2;
-		default:	
-			return 0;
-		}
+	private int ArithmeticLogicUnit(HashMap<String, Boolean> signal, int op1, int op2) {
 		
 		
+		
+		return 0;
 	}
 	
 }
