@@ -1,6 +1,7 @@
 package processor.pipeline;
 
 import java.util.HashMap;
+import generic.ControlSignals;
 
 import processor.Processor;
 
@@ -20,7 +21,48 @@ public class Execute {
 	
 	public void performEX()
 	{
-		//TODO
+		
+		ControlSignals control = OF_EX_Latch.getControl();
+		
+		// Getting the operands
+		int op1 = OF_EX_Latch.getOp1();
+		
+		// Checking if we should use immediate or not
+		int op2;
+		if (control.isImmediate()) {
+			op2 = OF_EX_Latch.getImmx();
+		} else {
+			op2 = OF_EX_Latch.getOp2();
+		}
+		
+		// Setting BranchTarget
+		EX_IF_Latch.setbranchTarget(OF_EX_Latch.getBranchTarget());
+		
+		// Setting isBranchTaken
+		if (control.isUBranch()) {
+			EX_IF_Latch.setBranchTaken(true);
+		} else {
+			
+			if (control.isBeq() && (op1 == op2)) {
+				EX_IF_Latch.setBranchTaken(true);
+			} 
+			else if (control.isBgt() && (op1 > op2)) {
+				EX_IF_Latch.setBranchTaken(true);
+			} else if (control.isBlt() && (op1 < op2)) {
+				EX_IF_Latch.setBranchTaken(true);
+			} else if (control.isBlt() && (op1 != op2)) {
+				EX_IF_Latch.setBranchTaken(true);
+			}
+		}
+		
+		EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
+		
+		// Pass other data to next latch
+		EX_MA_Latch.setstoreVal(OF_EX_Latch.getOp2());
+		EX_MA_Latch.setPC(OF_EX_Latch.getPC());
+		EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
+		EX_MA_Latch.setControlSignals(control);
+
 		
 		EX_MA_Latch.setMA_enable(true);
 		OF_EX_Latch.setEX_enable(false);
@@ -40,6 +82,7 @@ public class Execute {
             return op1 * op2;
         }
         if (signal.get("div")) {
+        	containingProcessor.getRegisterFile().setValue(31, op1 % op2);    // Setting the remainder to x31 register
             return op1/op2;
         }
         if (signal.get("and")) {
