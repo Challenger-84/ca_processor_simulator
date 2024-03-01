@@ -5,7 +5,10 @@ import generic.ControlSignals;
 public class OF_EX_LatchType {
 	
 	boolean EX_enable;
+	
+	int pc;
 	int instruction;
+	
 	int immx;
 	int branchTarget;
 	int op1;
@@ -25,6 +28,14 @@ public class OF_EX_LatchType {
 		EX_enable = eX_enable;
 	}
 
+	public int getPC() {
+        return pc;
+    }
+	
+	public void setPC(int pc) {
+        this.pc = pc;
+    }
+	
 	public int getInstruction() {
 		return instruction;
 	}
@@ -69,7 +80,7 @@ public class OF_EX_LatchType {
 		return control;
 	}
 
-	public void setControl(int op2) {
+	public void setControl(ControlSignals control) {
 		this.control = control;
 	}
 

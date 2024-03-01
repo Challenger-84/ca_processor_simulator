@@ -33,7 +33,7 @@ public class MA_RW_LatchType {
 		ldResult = value;
 	}
 	
-	public int ALUEesult() {
+	public int ALUResult() {
 		return ALUresult;
 	}
 	

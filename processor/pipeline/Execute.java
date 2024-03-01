@@ -1,5 +1,7 @@
 package processor.pipeline;
 
+import java.util.HashMap;
+
 import processor.Processor;
 
 public class Execute {
@@ -21,4 +23,49 @@ public class Execute {
 		//TODO
 	}
 
+	
+	private int ArithmeticLogicUnit(HashMap<String, Boolean> signal, int op1, int op2) {
+		
+		// Get the operation that needs to be performed
+		if (signal.get("add")) {
+            return op1 + op2;
+        }
+        if (signal.get("sub")) {
+            return op1 - op2;
+        }
+        if (signal.get("mul")) {
+            return op1 * op2;
+        }
+        if (signal.get("div")) {
+            return op1/op2;
+        }
+        if (signal.get("and")) {
+        	return op1 & op2;
+        }
+        if (signal.get("or")) {
+        	return op1 | op2;
+        }
+        if (signal.get("xor")) {
+        	return op1 ^ op2;
+        }
+        if (signal.get("slt")) {
+        	if (op1 < op2) {
+        		return 1;
+        	} else {
+        		return 0;
+        	}
+        }
+        if (signal.get("sll")) {
+        	return op1 << op2;
+        }
+        if (signal.get("srl")) {
+        	return op1 >>> op2;
+        }
+        if (signal.get("sra")) {
+        	return op1 >> op2;
+        }
+
+		return 0;
+	}
+	
 }
