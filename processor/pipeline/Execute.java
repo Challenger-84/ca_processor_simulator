@@ -19,6 +19,22 @@ public class Execute {
 	public void performEX()
 	{
 		//TODO
+		ArithmeticLogicUnit("add", 1, 2);
 	}
 
+	
+	private int ArithmeticLogicUnit(String signal, int op1, int op2) {
+		
+		switch (signal){
+		case "add":
+			return op1 + op2;
+		case "sub":
+			return op1 - op2;
+		default:	
+			return 0;
+		}
+		
+		
+	}
+	
 }

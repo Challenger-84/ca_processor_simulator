@@ -25,6 +25,7 @@ public class RegisterWrite {
 			int address;
 			if (signals.isCall()){
 				// TODO: Implement getting address from either rd or ra
+				address = 0;
 			}else {
 				address = 0;
 			}
