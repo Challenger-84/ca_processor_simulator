@@ -25,18 +25,19 @@ public class OperandFetch {
 		{
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
-			String inst_str = Integer.toBinaryString(instruction);
-			String inst_string = inst_str;
-			if (inst_str.length() != 32) {
-				inst_string = "0".repeat(32-inst_str.length()) + inst_str;
+			
+			String inst_string = Integer.toBinaryString(instruction);
+			if (inst_string.length() != 32) {
+				inst_string = "0".repeat(32-inst_string.length()) + inst_string;
 			}
 			
 			//5bit to control unit 
 			int opcode = Integer.parseInt(inst_string.substring(0,5), 2);
+			
+			// get control signals from control unit
 			ControlSignals control = control_unit.getControlSignals(opcode);
 			
-			//imm operands
-			//immx
+			//imm operations
 			String immx_18 = inst_string.substring(15);
 			String immx_32;
 			if(immx_18.charAt(0)== '0'){
@@ -62,37 +63,26 @@ public class OperandFetch {
 			} else {
 				offset = immx;
 			}
-//			System.out.println("offset22 " + (offset_22));
-//			System.out.println("offset32 " + (offset_32));
-//			System.out.println(offset);
-			//add pc and offset then store in OF_EX latch
+
 			int branchTarget = offset + currentPC;
-//			String branch_targeString = Integer.toBinaryString(branch_target_value);
-//			if (branch_targeString.length() != 32) {
-//				branch_targeString = '0'*(32-branch_targeString.length()) + branch_targeString;
-//			}
-//			int branchTarget = Integer.parseInt(branch_targeString);
 			
 		    //reg operands
 			String rs1String = inst_string.substring(5,10);
 			String rs2String = inst_string.substring(10,15);
-			String rdString = inst_string.substring(15,20);
+//			String rdString = inst_string.substring(15,20);
 
-			int rp1;
-			int rp2;
-
-			rp1 = Integer.parseUnsignedInt(rs1String, 2);
-			rp2 = Integer.parseUnsignedInt(rs2String, 2);
+			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
+			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
 			
-			int op1 = containingProcessor.getRegisterFile().getValue(rp1);
-			int op2 = containingProcessor.getRegisterFile().getValue(rp2);
+			int op1 = containingProcessor.getRegisterFile().getValue(rs1);
+			int op2 = containingProcessor.getRegisterFile().getValue(rs2);
 
-			//stop processor add below !!!!!
+			// End simulation if instruction is end
 			if (control.isEnd()) {
 				Simulator.setSimulationComplete(true);
 			}
 
-			
+			// Setting the next Latch
 			OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 			OF_EX_Latch.setOp1(op1);
 			OF_EX_Latch.setOp2(op2);
