@@ -84,7 +84,9 @@ public class Execute {
 		
 		// Get the operation that needs to be performed
 		if (signal.get("add")) {
-            long result =  op1 + op2;
+			long long_op1 = (long) op1;
+			long long_op2 = (long) op2;
+            long result =  long_op1 + long_op2;
             if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
             }
@@ -92,10 +94,22 @@ public class Execute {
             
         }
         if (signal.get("sub")) {
-            return op1 - op2;
+        	long long_op1 = (long) op1;
+			long long_op2 = (long) op2;
+            long result =  long_op1 - long_op2;
+            if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
+            }
+            return (int) result;
         }
         if (signal.get("mul")) {
-            return op1 * op2;
+        	long long_op1 = (long) op1;
+			long long_op2 = (long) op2;
+            long result =  long_op1 * long_op2;
+            if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
+            }
+            return (int) result;
         }
         if (signal.get("div")) {
         	containingProcessor.getRegisterFile().setValue(31, op1 % op2);    // Setting the remainder to x31 register
