@@ -26,9 +26,6 @@ public class MemoryAccess {
 			
 			if (EX_MA_Latch.controlSignals().isSt()) {
 			
-				System.out.println("Storing");
-				System.out.println(EX_MA_Latch.ALUResult());
-				System.out.println(EX_MA_Latch.storeVal());
 				containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
 			}
 			

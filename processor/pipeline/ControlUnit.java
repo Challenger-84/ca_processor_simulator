@@ -95,6 +95,7 @@ public class ControlUnit {
 		        signals.setLd(true);
 		        signals.setWb(true);
 		        signals.enableALUSignal("add");
+		        signals.setImmediate(true);
 		        break;
 	
 		    case store:

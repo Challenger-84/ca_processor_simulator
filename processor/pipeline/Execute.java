@@ -40,8 +40,6 @@ public class Execute {
 		} else if (control.isSt()) {
 			op1 = OF_EX_Latch.getOp2();
 			op2 = OF_EX_Latch.getImmx();
-			System.out.println(containingProcessor.getRegisterFile().getValue(5));
-			System.out.println();
 		}
 		
 		// Setting BranchTarget
@@ -61,7 +59,7 @@ public class Execute {
 				EX_IF_Latch.setBranchTaken(true);
 			} else if (control.isBlt() && (op1 < op2)) {
 				EX_IF_Latch.setBranchTaken(true);
-			} else if (control.isBlt() && (op1 != op2)) {
+			} else if (control.isBne() && (op1 != op2)) {
 				EX_IF_Latch.setBranchTaken(true);
 			}
 		}
@@ -69,7 +67,6 @@ public class Execute {
 		EX_IF_Latch.setIF_enable(true);
 		
 		EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
-		System.out.println(EX_MA_Latch.ALUResult());
 		
 		// Pass other data to next latch
 		EX_MA_Latch.setstoreVal(OF_EX_Latch.getOp1());

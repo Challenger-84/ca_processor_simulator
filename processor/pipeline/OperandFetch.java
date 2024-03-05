@@ -82,14 +82,7 @@ public class OperandFetch {
 			int rp2;
 
 			rp1 = Integer.parseUnsignedInt(rs1String, 2);
-
-			
-			if(control.isSt() == false){
-				rp2 = Integer.parseUnsignedInt(rs2String, 2);
-			}
-			else{
-				rp2 =  Integer.parseUnsignedInt(rdString, 2);
-			}
+			rp2 = Integer.parseUnsignedInt(rs2String, 2);
 			
 			int op1 = containingProcessor.getRegisterFile().getValue(rp1);
 			int op2 = containingProcessor.getRegisterFile().getValue(rp2);

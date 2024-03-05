@@ -25,6 +25,7 @@ public class Main {
 		Simulator.simulate();
 		
 		processor.printState(0, 30); // ((0, 0) refers to the range of main memory addresses we wish to print. this is an empty set.
+		//processor.printState(65515, 65535);
 		
 		Statistics.printStatistics(args[1]);
 		
