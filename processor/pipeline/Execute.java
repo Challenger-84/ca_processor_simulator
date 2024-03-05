@@ -84,7 +84,12 @@ public class Execute {
 		
 		// Get the operation that needs to be performed
 		if (signal.get("add")) {
-            return op1 + op2;
+            long result =  op1 + op2;
+            if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
+            }
+            return (int) result;
+            
         }
         if (signal.get("sub")) {
             return op1 - op2;

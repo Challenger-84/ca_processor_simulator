@@ -50,7 +50,7 @@ public class OperandFetch {
 	
 			//branchTarget
 			int offset;
-			int rd = Integer.parseInt(inst_string.substring(15,20));
+			int rd = Integer.parseInt(inst_string.substring(5,10));
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
 				String offset_32;
