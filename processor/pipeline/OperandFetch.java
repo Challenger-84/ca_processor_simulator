@@ -50,7 +50,7 @@ public class OperandFetch {
 	
 			//branchTarget
 			int offset;
-			int rd = Integer.parseInt(inst_string.substring(5,10));
+			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
 				String offset_32;
@@ -61,7 +61,9 @@ public class OperandFetch {
 					offset_32 = "1".repeat(10) + offset_str;
 				} 
 				offset = Integer.parseUnsignedInt(offset_32, 2);
-				offset += rd;
+				offset += containingProcessor.getRegisterFile().getValue(rd);
+				System.out.println("offset: " + offset);
+				System.out.println(containingProcessor.getRegisterFile().getValue(rd));
 			} else {
 				offset = immx;
 			}
