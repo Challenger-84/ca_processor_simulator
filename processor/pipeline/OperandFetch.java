@@ -62,8 +62,7 @@ public class OperandFetch {
 				} 
 				offset = Integer.parseUnsignedInt(offset_32, 2);
 				offset += containingProcessor.getRegisterFile().getValue(rd);
-				System.out.println("offset: " + offset);
-				System.out.println(containingProcessor.getRegisterFile().getValue(rd));
+
 			} else {
 				offset = immx;
 			}
