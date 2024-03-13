@@ -2,7 +2,6 @@ package processor.pipeline;
 
 import generic.ControlSignals;
 import processor.Processor;
-import generic.Simulator;
 
 public class OperandFetch {
 	Processor containingProcessor;
@@ -23,8 +22,11 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
+			
+			System.out.println("OF Ins: " + instruction);
 			
 			String inst_string = Integer.toBinaryString(instruction);
 			if (inst_string.length() != 32) {
@@ -81,9 +83,9 @@ public class OperandFetch {
 			int op2 = containingProcessor.getRegisterFile().getValue(rs2);
 
 			// End simulation if instruction is end
-			if (control.isEnd()) {
-				Simulator.setSimulationComplete(true);
-			}
+//			if (control.isEnd()) {
+//				Simulator.setSimulationComplete(true);
+//			}
 
 			// Setting the next Latch
 			OF_EX_Latch.setPC(IF_OF_Latch.getPC());

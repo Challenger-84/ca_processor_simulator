@@ -54,12 +54,13 @@ public class Simulator {
 	
 	public static void simulate()
 	{
-		while(simulationComplete == false)
+		while(simulationComplete == false && Clock.getCurrentTime() < 10)
 		{
+			System.out.println("Cycle : " + Clock.getCurrentTime());
+			processor.getIFUnit().performBranch();
 			processor.getRWUnit().performRW();
 			processor.getMAUnit().performMA();
 			processor.getEXUnit().performEX();
-			processor.getIFUnit().performBranch();
 			processor.getOFUnit().performOF();
 			processor.getIFUnit().performIF();
 			Clock.incrementClock();

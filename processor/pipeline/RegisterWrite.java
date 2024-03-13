@@ -50,7 +50,7 @@ public class RegisterWrite {
 			}
 			
 			MA_RW_Latch.setRW_enable(false);
-			IF_EnableLatch.setIF_enable(true);
+			//IF_EnableLatch.setIF_enable(true);
 		}
 	}
 

@@ -21,62 +21,64 @@ public class Execute {
 	
 	public void performEX()
 	{
-		
-		ControlSignals control = OF_EX_Latch.getControl();
-		
-		// Getting the operands
-		int op1 = OF_EX_Latch.getOp1();
-		
-		// Checking if we should use immediate or not
-		int op2;
-		if (control.isImmediate()) {
-			op2 = OF_EX_Latch.getImmx();
-		} else {
-			op2 = OF_EX_Latch.getOp2();
-		}
-		
-		if (control.isLd()) {
-			op2 = OF_EX_Latch.getImmx();
-		} else if (control.isSt()) {
-			op1 = OF_EX_Latch.getOp2();
-			op2 = OF_EX_Latch.getImmx();
-		}
-		
-		// Setting BranchTarget
-		EX_IF_Latch.setbranchTarget(OF_EX_Latch.getBranchTarget());
-		
-		EX_IF_Latch.setBranchTaken(false);
-		
-		// Setting isBranchTaken
-		if (control.isUBranch()) {
-			EX_IF_Latch.setBranchTaken(true);
-		} else {
+		if (OF_EX_Latch.isEX_enable()) {
 			
-			if (control.isBeq() && (op1 == op2)) {
-				EX_IF_Latch.setBranchTaken(true);
-			} 
-			else if (control.isBgt() && (op1 > op2)) {
-				EX_IF_Latch.setBranchTaken(true);
-			} else if (control.isBlt() && (op1 < op2)) {
-				EX_IF_Latch.setBranchTaken(true);
-			} else if (control.isBne() && (op1 != op2)) {
-				EX_IF_Latch.setBranchTaken(true);
+			ControlSignals control = OF_EX_Latch.getControl();
+			
+			// Getting the operands
+			int op1 = OF_EX_Latch.getOp1();
+			
+			// Checking if we should use immediate or not
+			int op2;
+			if (control.isImmediate()) {
+				op2 = OF_EX_Latch.getImmx();
+			} else {
+				op2 = OF_EX_Latch.getOp2();
 			}
+			
+			if (control.isLd()) {
+				op2 = OF_EX_Latch.getImmx();
+			} else if (control.isSt()) {
+				op1 = OF_EX_Latch.getOp2();
+				op2 = OF_EX_Latch.getImmx();
+			}
+			
+			// Setting BranchTarget
+			EX_IF_Latch.setbranchTarget(OF_EX_Latch.getBranchTarget());
+			
+			EX_IF_Latch.setBranchTaken(false);
+			
+			// Setting isBranchTaken
+			if (control.isUBranch()) {
+				EX_IF_Latch.setBranchTaken(true);
+			} else {
+				
+				if (control.isBeq() && (op1 == op2)) {
+					EX_IF_Latch.setBranchTaken(true);
+				} 
+				else if (control.isBgt() && (op1 > op2)) {
+					EX_IF_Latch.setBranchTaken(true);
+				} else if (control.isBlt() && (op1 < op2)) {
+					EX_IF_Latch.setBranchTaken(true);
+				} else if (control.isBne() && (op1 != op2)) {
+					EX_IF_Latch.setBranchTaken(true);
+				}
+			}
+			
+			EX_IF_Latch.setIF_enable(true);
+			
+			EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
+			
+			// Pass other data to next latch
+			EX_MA_Latch.setstoreVal(OF_EX_Latch.getOp1());
+			EX_MA_Latch.setPC(OF_EX_Latch.getPC());
+			EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
+			EX_MA_Latch.setControlSignals(control);
+	
+			
+			EX_MA_Latch.setMA_enable(true);
+			OF_EX_Latch.setEX_enable(false);
 		}
-		
-		EX_IF_Latch.setIF_enable(true);
-		
-		EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
-		
-		// Pass other data to next latch
-		EX_MA_Latch.setstoreVal(OF_EX_Latch.getOp1());
-		EX_MA_Latch.setPC(OF_EX_Latch.getPC());
-		EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
-		EX_MA_Latch.setControlSignals(control);
-
-		
-		EX_MA_Latch.setMA_enable(true);
-		OF_EX_Latch.setEX_enable(false);
 	}
 
 	

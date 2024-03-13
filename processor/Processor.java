@@ -40,6 +40,7 @@ public class Processor {
 		mainMemory = new MainMemory();
 		
 		IF_EnableLatch = new IF_EnableLatchType();
+		IF_EnableLatch.setIF_enable(true);
 		IF_OF_Latch = new IF_OF_LatchType();
 		OF_EX_Latch = new OF_EX_LatchType();
 		EX_MA_Latch = new EX_MA_LatchType();

@@ -1,6 +1,7 @@
 package processor.pipeline;
 
 import processor.Processor;
+import generic.Simulator;
 
 public class MemoryAccess {
 	Processor containingProcessor;
@@ -17,6 +18,11 @@ public class MemoryAccess {
 	public void performMA()
 	{
 		if (EX_MA_Latch.isMA_enable()) {
+			
+			// End simulation if instruction is end
+			if (EX_MA_Latch.controlSignals().isEnd()) {
+				Simulator.setSimulationComplete(true);
+			}
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				
