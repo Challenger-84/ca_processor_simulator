@@ -4,7 +4,7 @@ import generic.ControlSignals;
 
 public class MA_RW_LatchType {
 	
-	boolean RW_enable;
+	boolean RW_enable = false;
 		
 	int pc;
 	int instruction;
