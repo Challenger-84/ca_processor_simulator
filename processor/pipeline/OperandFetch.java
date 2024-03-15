@@ -80,23 +80,33 @@ public class OperandFetch {
 			}
 
 			int branchTarget = offset + currentPC;
-
-			//locking rd
-			if(rd != 0){
-				containingProcessor.setRegisterLock(rd,true);
-			}
 			
 		    //reg operands
 			String rs1String = inst_string.substring(5,10);
 			String rs2String = inst_string.substring(10,15);
-//			String rdString = inst_string.substring(15,20);
 
 			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
 			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
 			int op1;
 			int op2;
-
-			if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
+			
+			int rd_address;
+			String rdString;
+			if (control.isImmediate()) {
+				rdString = inst_string.substring(10,15);
+			} else {
+				rdString = inst_string.substring(15,20);
+			}
+			rd_address = Integer.parseInt(rdString, 2);
+			
+			//locking rd
+			if(rd_address != 0){
+				System.out.println("rd: " + rd_address);
+				containingProcessor.setRegisterLock(rd_address,true);
+			}
+			
+			
+			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
 				op1 = containingProcessor.getRegisterFile().getValue(rs1);
 				op2 = containingProcessor.getRegisterFile().getValue(rs2);
 			}
@@ -127,23 +137,12 @@ public class OperandFetch {
 			OF_EX_Latch.setInstruction(instruction);
 
 
-			if(control.isImmediate()){
-				//if imm no need to check rs2
-				if(containingProcessor.getRegisterLock(rs1) == false){
-					IF_EnableLatch.setIF_enable(true);
-					IF_OF_Latch.setOF_enable(false);
-				}else{
-					IF_EnableLatch.setIF_enable(false);//disable IF unit
-					IF_OF_Latch.setOF_enable(true);
-				}
+			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
+				IF_EnableLatch.setIF_enable(true);
+				IF_OF_Latch.setOF_enable(false);
 			}else{
-				if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
-					IF_EnableLatch.setIF_enable(true);
-					IF_OF_Latch.setOF_enable(false);
-				}else{
-					IF_EnableLatch.setIF_enable(false);//disable IF unit
-					IF_OF_Latch.setOF_enable(true);
-				}
+				IF_EnableLatch.setIF_enable(false);//disable IF unit
+				IF_OF_Latch.setOF_enable(true);
 			}
 			
 

@@ -21,6 +21,8 @@ public class RegisterWrite {
 		if(MA_RW_Latch.isRW_enable())
 		{
 			
+			System.out.println("RW Ins: " + MA_RW_Latch.instruction);
+			
 			// End simulation if instruction is end
 			if (MA_RW_Latch.controlSignals().isEnd()) {
 				Simulator.setSimulationComplete(true);

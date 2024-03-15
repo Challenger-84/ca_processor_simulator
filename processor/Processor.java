@@ -111,6 +111,7 @@ public class Processor {
 	public void setRegisterLock(int reg_addr, boolean lock) {
 		if (reg_addr < 32){
 			register_locks[reg_addr] = lock;
+			System.out.println("reg:" + reg_addr + " lock:" + register_locks[reg_addr]);
 		}
 	}
 
