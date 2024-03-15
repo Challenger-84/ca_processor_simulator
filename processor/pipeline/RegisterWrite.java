@@ -48,6 +48,11 @@ public class RegisterWrite {
 			if (signals.isWb()) {
 				containingProcessor.getRegisterFile().setValue(address, data);
 			}
+
+			//unlock rd
+			if(containingProcessor.getRegisterLock(address)){
+				containingProcessor.setRegisterLock(address, false);
+			}
 			
 			MA_RW_Latch.setRW_enable(false);
 			//IF_EnableLatch.setIF_enable(true);

@@ -8,6 +8,7 @@ public class OperandFetch {
 	IF_OF_LatchType IF_OF_Latch;
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
+	IF_EnableLatchType IF_EnableLatch;
 
 	
 	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch)
@@ -53,6 +54,10 @@ public class OperandFetch {
 			//branchTarget
 			int offset;
 			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
+
+			// what if ubranch where rd value is used ?? check ://
+
+			//jmp, offset = rd+imm
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
 				String offset_32;
@@ -63,13 +68,22 @@ public class OperandFetch {
 					offset_32 = "1".repeat(10) + offset_str;
 				} 
 				offset = Integer.parseUnsignedInt(offset_32, 2);
-				offset += containingProcessor.getRegisterFile().getValue(rd);
+				if(containingProcessor.getRegisterLock(rd) == false){
+					offset += containingProcessor.getRegisterFile().getValue(rd);
+				}else{
+					offset = 0;
+				}
 
 			} else {
 				offset = immx;
 			}
 
 			int branchTarget = offset + currentPC;
+
+			//locking rd
+			if(rd != 0){
+				containingProcessor.setRegisterLock(rd,true);
+			}
 			
 		    //reg operands
 			String rs1String = inst_string.substring(5,10);
@@ -78,9 +92,24 @@ public class OperandFetch {
 
 			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
 			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
-			
-			int op1 = containingProcessor.getRegisterFile().getValue(rs1);
-			int op2 = containingProcessor.getRegisterFile().getValue(rs2);
+			int op1;
+			int op2;
+
+			if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
+				op1 = containingProcessor.getRegisterFile().getValue(rs1);
+				op2 = containingProcessor.getRegisterFile().getValue(rs2);
+			}
+			else{
+				// passing add %x0 %x0 %x0 (nop)
+
+				op1 = containingProcessor.getRegisterFile().getValue(0);
+				op2 = containingProcessor.getRegisterFile().getValue(0);
+				branchTarget = currentPC;
+				immx = 0;
+				control = control_unit.getControlSignals(0); 
+				instruction = 0;
+
+			}
 
 			// End simulation if instruction is end
 //			if (control.isEnd()) {
@@ -96,9 +125,16 @@ public class OperandFetch {
 			OF_EX_Latch.setControl(control);
 			OF_EX_Latch.setInstruction(instruction);
 			
-			
-			IF_OF_Latch.setOF_enable(false);
+			if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
+				IF_EnableLatch.setIF_enable(true);
+				IF_OF_Latch.setOF_enable(false);
+			}else{
+				IF_EnableLatch.setIF_enable(false);//disable IF unit
+				IF_OF_Latch.setOF_enable(true);
+			}
+
 			OF_EX_Latch.setEX_enable(true);
+			
 		}
 	}
 	
