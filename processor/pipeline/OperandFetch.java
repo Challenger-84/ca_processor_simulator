@@ -124,14 +124,27 @@ public class OperandFetch {
 			OF_EX_Latch.setImmx(immx);
 			OF_EX_Latch.setControl(control);
 			OF_EX_Latch.setInstruction(instruction);
-			
-			if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
-				IF_EnableLatch.setIF_enable(true);
-				IF_OF_Latch.setOF_enable(false);
+
+
+			if(control.isImmediate()){
+				//if imm no need to check rs2
+				if(containingProcessor.getRegisterLock(rs1) == false){
+					IF_EnableLatch.setIF_enable(true);
+					IF_OF_Latch.setOF_enable(false);
+				}else{
+					IF_EnableLatch.setIF_enable(false);//disable IF unit
+					IF_OF_Latch.setOF_enable(true);
+				}
 			}else{
-				IF_EnableLatch.setIF_enable(false);//disable IF unit
-				IF_OF_Latch.setOF_enable(true);
+				if(containingProcessor.getRegisterLock(rs1) == false && containingProcessor.getRegisterLock(rs2) == false){
+					IF_EnableLatch.setIF_enable(true);
+					IF_OF_Latch.setOF_enable(false);
+				}else{
+					IF_EnableLatch.setIF_enable(false);//disable IF unit
+					IF_OF_Latch.setOF_enable(true);
+				}
 			}
+			
 
 			OF_EX_Latch.setEX_enable(true);
 			
