@@ -19,10 +19,6 @@ public class MemoryAccess {
 	{
 		if (EX_MA_Latch.isMA_enable()) {
 			
-			// End simulation if instruction is end
-			if (EX_MA_Latch.controlSignals().isEnd()) {
-				Simulator.setSimulationComplete(true);
-			}
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				

@@ -11,11 +11,12 @@ public class OperandFetch {
 	IF_EnableLatchType IF_EnableLatch;
 
 	
-	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch)
+	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.OF_EX_Latch = oF_EX_Latch;
+		this.IF_EnableLatch = iF_EnableLatch;
 		this.control_unit = new ControlUnit();
 	}
 	

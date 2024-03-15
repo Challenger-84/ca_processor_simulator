@@ -20,6 +20,13 @@ public class RegisterWrite {
 	{
 		if(MA_RW_Latch.isRW_enable())
 		{
+			
+			// End simulation if instruction is end
+			if (MA_RW_Latch.controlSignals().isEnd()) {
+				Simulator.setSimulationComplete(true);
+				return;
+			}
+			
 			ControlSignals signals = MA_RW_Latch.controlSignals();
 			int instruction = MA_RW_Latch.getInstruction();
 			String inst_string = Integer.toBinaryString(instruction);
