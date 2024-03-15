@@ -9,6 +9,7 @@ public class OperandFetch {
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
 	IF_EnableLatchType IF_EnableLatch;
+	boolean rd_locked = false;
 
 	
 	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch)
@@ -24,6 +25,11 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			
+			if (rd_locked) {
+				sendNop();
+				return;
+			}
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
@@ -103,6 +109,7 @@ public class OperandFetch {
 			if(rd_address != 0){
 				System.out.println("rd: " + rd_address);
 				containingProcessor.setRegisterLock(rd_address,true);
+				rd_locked = true;
 			}
 			
 			
