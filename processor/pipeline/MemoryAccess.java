@@ -20,6 +20,8 @@ public class MemoryAccess {
 		if (EX_MA_Latch.isMA_enable()) {
 			
 			
+			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
+			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				
 				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());

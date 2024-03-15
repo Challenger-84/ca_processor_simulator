@@ -9,7 +9,7 @@ public class OperandFetch {
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
 	IF_EnableLatchType IF_EnableLatch;
-	boolean rd_locked = false;
+	boolean operand_locked = false;
 
 	
 	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch)
@@ -25,11 +25,6 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
-			
-			if (rd_locked) {
-				sendNop();
-				return;
-			}
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
@@ -96,6 +91,14 @@ public class OperandFetch {
 			int op1;
 			int op2;
 			
+			if (operand_locked) {
+				sendNop();
+				if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
+					operand_locked = false;
+				}
+				return;
+			}
+			
 			int rd_address;
 			String rdString;
 			if (control.isImmediate()) {
@@ -107,9 +110,7 @@ public class OperandFetch {
 			
 			//locking rd
 			if(rd_address != 0){
-				System.out.println("rd: " + rd_address);
 				containingProcessor.setRegisterLock(rd_address,true);
-				rd_locked = true;
 			}
 			
 			
@@ -119,7 +120,7 @@ public class OperandFetch {
 			}
 			else{
 				// passing add %x0 %x0 %x0 (nop)
-
+				operand_locked = true;
 				op1 = containingProcessor.getRegisterFile().getValue(0);
 				op2 = containingProcessor.getRegisterFile().getValue(0);
 				branchTarget = currentPC;
@@ -156,6 +157,18 @@ public class OperandFetch {
 			OF_EX_Latch.setEX_enable(true);
 			
 		}
+	}
+	
+	private void sendNop() {
+		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+		OF_EX_Latch.setOp1(0);
+		OF_EX_Latch.setOp2(0);
+		OF_EX_Latch.setBranchTarget(0);
+		OF_EX_Latch.setImmx(0);
+		OF_EX_Latch.setControl(control_unit.getControlSignals(0));
+		OF_EX_Latch.setInstruction(0);
+		
+		OF_EX_Latch.setEX_enable(true);
 	}
 	
 }

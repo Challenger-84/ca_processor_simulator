@@ -23,6 +23,8 @@ public class Execute {
 	{
 		if (OF_EX_Latch.isEX_enable()) {
 			
+			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
+			
 			ControlSignals control = OF_EX_Latch.getControl();
 			
 			// Getting the operands
