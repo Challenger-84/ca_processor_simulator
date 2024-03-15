@@ -8,13 +8,16 @@ public class OperandFetch {
 	IF_OF_LatchType IF_OF_Latch;
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
+	IF_EnableLatchType IF_EnableLatch;
+	boolean operand_locked = false;
 
 	
-	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch)
+	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.OF_EX_Latch = oF_EX_Latch;
+		this.IF_EnableLatch = iF_EnableLatch;
 		this.control_unit = new ControlUnit();
 	}
 	
@@ -53,6 +56,10 @@ public class OperandFetch {
 			//branchTarget
 			int offset;
 			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
+
+			// what if ubranch where rd value is used ?? check ://
+
+			//jmp, offset = rd+imm
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
 				String offset_32;
@@ -63,7 +70,11 @@ public class OperandFetch {
 					offset_32 = "1".repeat(10) + offset_str;
 				} 
 				offset = Integer.parseUnsignedInt(offset_32, 2);
-				offset += containingProcessor.getRegisterFile().getValue(rd);
+				if(containingProcessor.getRegisterLock(rd) == false){
+					offset += containingProcessor.getRegisterFile().getValue(rd);
+				}else{
+					offset = 0;
+				}
 
 			} else {
 				offset = immx;
@@ -74,13 +85,50 @@ public class OperandFetch {
 		    //reg operands
 			String rs1String = inst_string.substring(5,10);
 			String rs2String = inst_string.substring(10,15);
-//			String rdString = inst_string.substring(15,20);
 
 			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
 			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
+			int op1;
+			int op2;
 			
-			int op1 = containingProcessor.getRegisterFile().getValue(rs1);
-			int op2 = containingProcessor.getRegisterFile().getValue(rs2);
+			if (operand_locked) {
+				sendNop();
+				if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
+					operand_locked = false;
+				}
+				return;
+			}
+			
+			int rd_address;
+			String rdString;
+			if (control.isImmediate()) {
+				rdString = inst_string.substring(10,15);
+			} else {
+				rdString = inst_string.substring(15,20);
+			}
+			rd_address = Integer.parseInt(rdString, 2);
+			
+			//locking rd
+			if(rd_address != 0){
+				containingProcessor.setRegisterLock(rd_address,true);
+			}
+			
+			
+			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
+				op1 = containingProcessor.getRegisterFile().getValue(rs1);
+				op2 = containingProcessor.getRegisterFile().getValue(rs2);
+			}
+			else{
+				// passing add %x0 %x0 %x0 (nop)
+				operand_locked = true;
+				op1 = containingProcessor.getRegisterFile().getValue(0);
+				op2 = containingProcessor.getRegisterFile().getValue(0);
+				branchTarget = currentPC;
+				immx = 0;
+				control = control_unit.getControlSignals(0); 
+				instruction = 0;
+
+			}
 
 			// End simulation if instruction is end
 //			if (control.isEnd()) {
@@ -95,11 +143,32 @@ public class OperandFetch {
 			OF_EX_Latch.setImmx(immx);
 			OF_EX_Latch.setControl(control);
 			OF_EX_Latch.setInstruction(instruction);
+
+
+			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
+				IF_EnableLatch.setIF_enable(true);
+				IF_OF_Latch.setOF_enable(false);
+			}else{
+				IF_EnableLatch.setIF_enable(false);//disable IF unit
+				IF_OF_Latch.setOF_enable(true);
+			}
 			
-			
-			IF_OF_Latch.setOF_enable(false);
+
 			OF_EX_Latch.setEX_enable(true);
+			
 		}
+	}
+	
+	private void sendNop() {
+		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+		OF_EX_Latch.setOp1(0);
+		OF_EX_Latch.setOp2(0);
+		OF_EX_Latch.setBranchTarget(0);
+		OF_EX_Latch.setImmx(0);
+		OF_EX_Latch.setControl(control_unit.getControlSignals(0));
+		OF_EX_Latch.setInstruction(0);
+		
+		OF_EX_Latch.setEX_enable(true);
 	}
 	
 }
