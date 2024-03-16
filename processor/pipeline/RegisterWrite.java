@@ -60,8 +60,8 @@ public class RegisterWrite {
 			}
 
 			//unlock rd
-			if(containingProcessor.getRegisterLock(address)){
-				containingProcessor.setRegisterLock(address, false);
+			if(containingProcessor.getRegisterLock(address) != 0){
+				containingProcessor.unlockRegister(address);
 			}
 			
 			MA_RW_Latch.setRW_enable(false);

@@ -35,7 +35,7 @@ public class Processor {
 	MemoryAccess MAUnit;
 	RegisterWrite RWUnit;
 	
-	boolean[] register_locks;  
+	int[] register_locks;  
 	
 	public Processor()
 	{
@@ -58,7 +58,7 @@ public class Processor {
 		MAUnit = new MemoryAccess(this, EX_MA_Latch, MA_RW_Latch);
 		RWUnit = new RegisterWrite(this, MA_RW_Latch, IF_EnableLatch);
 
-		register_locks = new boolean[32];  
+		register_locks = new int[32];  
 		
 	}
 	
@@ -105,17 +105,23 @@ public class Processor {
 		return RWUnit;
 	}
 	
-	public boolean getRegisterLock(int reg_addr) {
+	public int getRegisterLock(int reg_addr) {
 		if (reg_addr < 32){
 			return register_locks[reg_addr];
 		} else {
-			return false;
+			return 0;
 		}
 	}
 	
-	public void setRegisterLock(int reg_addr, boolean lock) {
+	public void lockRegister(int reg_addr) {
 		if (reg_addr < 32){
-			register_locks[reg_addr] = lock;
+			register_locks[reg_addr] += 1;
+		}
+	}
+	
+	public void unlockRegister(int reg_addr) {
+		if (reg_addr < 32){
+			register_locks[reg_addr] -= 1;
 		}
 	}
 
