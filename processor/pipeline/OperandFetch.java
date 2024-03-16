@@ -163,6 +163,11 @@ public class OperandFetch {
 			
 
 			OF_EX_Latch.setEX_enable(true);
+
+			//locking rd
+			if(rd_address != 0){
+				containingProcessor.setRegisterLock(rd_address,true);
+			}
 			
 		}
 	}
