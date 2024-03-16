@@ -116,6 +116,7 @@ public class OperandFetch {
 				rdString = inst_string.substring(15,20);
 			}
 			rd_address = Integer.parseInt(rdString, 2);
+
 			
 			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
 				op1 = containingProcessor.getRegisterFile().getValue(rs1);
@@ -163,11 +164,6 @@ public class OperandFetch {
 			
 
 			OF_EX_Latch.setEX_enable(true);
-
-			//locking rd
-			if(rd_address != 0){
-				containingProcessor.setRegisterLock(rd_address,true);
-			}
 			
 		}
 	}
