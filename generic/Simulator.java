@@ -54,7 +54,7 @@ public class Simulator {
 	
 	public static void simulate()
 	{
-		while(simulationComplete == false && Clock.getCurrentTime() < 100)
+		while(simulationComplete == false)
 		{
 			System.out.println("Cycle : " + (Clock.getCurrentTime() + 1));
 			processor.getIFUnit().performBranch();

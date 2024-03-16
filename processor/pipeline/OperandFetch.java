@@ -9,15 +9,19 @@ public class OperandFetch {
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
 	IF_EnableLatchType IF_EnableLatch;
+	EX_OF_LatchType EX_OF_Latch;
+	
 	boolean operand_locked = false;
 
 	
-	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch)
+	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch, EX_OF_LatchType eX_OF_Latch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.OF_EX_Latch = oF_EX_Latch;
 		this.IF_EnableLatch = iF_EnableLatch;
+		this.EX_OF_Latch = eX_OF_Latch;
+		
 		this.control_unit = new ControlUnit();
 	}
 	
@@ -25,6 +29,11 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			
+			if (EX_OF_Latch.isBranchTaken()) {
+				sendNop();
+				return;
+			}
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();

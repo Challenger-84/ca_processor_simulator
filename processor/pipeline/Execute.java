@@ -10,13 +10,15 @@ public class Execute {
 	OF_EX_LatchType OF_EX_Latch;
 	EX_MA_LatchType EX_MA_Latch;
 	EX_IF_LatchType EX_IF_Latch;
+	EX_OF_LatchType EX_OF_Latch;
 	
-	public Execute(Processor containingProcessor, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch)
+	public Execute(Processor containingProcessor, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch, EX_OF_LatchType eX_OF_Latch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.OF_EX_Latch = oF_EX_Latch;
 		this.EX_MA_Latch = eX_MA_Latch;
 		this.EX_IF_Latch = eX_IF_Latch;
+		this.EX_OF_Latch = eX_OF_Latch;
 	}
 	
 	public void performEX()
@@ -49,21 +51,27 @@ public class Execute {
 			EX_IF_Latch.setbranchTarget(OF_EX_Latch.getBranchTarget());
 			
 			EX_IF_Latch.setBranchTaken(false);
+			EX_OF_Latch.setBranchTaken(false);
 			
 			// Setting isBranchTaken
 			if (control.isUBranch()) {
 				EX_IF_Latch.setBranchTaken(true);
+				EX_OF_Latch.setBranchTaken(true);
 			} else {
 				
 				if (control.isBeq() && (op1 == op2)) {
 					EX_IF_Latch.setBranchTaken(true);
+					EX_OF_Latch.setBranchTaken(true);
 				} 
 				else if (control.isBgt() && (op1 > op2)) {
 					EX_IF_Latch.setBranchTaken(true);
+					EX_OF_Latch.setBranchTaken(true);
 				} else if (control.isBlt() && (op1 < op2)) {
 					EX_IF_Latch.setBranchTaken(true);
+					EX_OF_Latch.setBranchTaken(true);
 				} else if (control.isBne() && (op1 != op2)) {
 					EX_IF_Latch.setBranchTaken(true);
+					EX_OF_Latch.setBranchTaken(true);
 				}
 			}
 			
