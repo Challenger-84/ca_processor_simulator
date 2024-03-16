@@ -117,12 +117,6 @@ public class OperandFetch {
 			}
 			rd_address = Integer.parseInt(rdString, 2);
 			
-			//locking rd
-			if(rd_address != 0){
-				containingProcessor.setRegisterLock(rd_address,true);
-			}
-			
-			
 			if(containingProcessor.getRegisterLock(rs1) == false && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == false)){
 				op1 = containingProcessor.getRegisterFile().getValue(rs1);
 				op2 = containingProcessor.getRegisterFile().getValue(rs2);
@@ -137,6 +131,11 @@ public class OperandFetch {
 				control = control_unit.getControlSignals(0); 
 				instruction = 0;
 
+			}
+
+			//locking rd
+			if(rd_address != 0){
+				containingProcessor.setRegisterLock(rd_address,true);
 			}
 
 			// End simulation if instruction is end
