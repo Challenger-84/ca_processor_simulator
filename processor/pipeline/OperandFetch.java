@@ -133,10 +133,6 @@ public class OperandFetch {
 
 			}
 
-			//locking rd
-			if(rd_address != 0){
-				containingProcessor.setRegisterLock(rd_address,true);
-			}
 
 			// End simulation if instruction is end
 //			if (control.isEnd()) {
@@ -161,6 +157,10 @@ public class OperandFetch {
 				IF_OF_Latch.setOF_enable(true);
 			}
 			
+			//locking rd
+			if(rd_address != 0){
+				containingProcessor.setRegisterLock(rd_address,true);
+			}
 
 			OF_EX_Latch.setEX_enable(true);
 			
