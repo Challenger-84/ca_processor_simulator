@@ -2,6 +2,7 @@ package processor.pipeline;
 
 import generic.ControlSignals;
 import processor.Processor;
+import generic.Statistics;
 
 public class OperandFetch {
 	Processor containingProcessor;
