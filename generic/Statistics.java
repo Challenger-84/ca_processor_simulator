@@ -8,6 +8,9 @@ public class Statistics {
 	static int numberOfInstructions;
 	static int numberOfCycles;
 	
+	
+	static int numOfBranch;
+	static int numOfBranchTaken;
 
 	public static void printStatistics(String statFile)
 	{
@@ -17,6 +20,9 @@ public class Statistics {
 			
 			writer.println("Number of instructions executed = " + numberOfInstructions);
 			writer.println("Number of cycles taken = " + numberOfCycles);
+			
+			writer.println("Number of Branch Statements = " + numOfBranch);
+			writer.println("Number of Branch Taken = " + numOfBranchTaken);
 			
 			// TODO add code here to print statistics in the output file
 			
@@ -35,5 +41,13 @@ public class Statistics {
 
 	public void setNumberOfCycles(int numberOfCycles) {
 		Statistics.numberOfCycles = numberOfCycles;
+	}
+	
+	public void incrementNumOfBranch(int increment_val) {
+		Statistics.numOfBranch += increment_val;
+	}
+	
+	public void incrementNumOfBranchTaken(int increment_val) {
+		Statistics.numOfBranchTaken += increment_val;
 	}
 }

@@ -2,8 +2,10 @@ package processor.pipeline;
 
 import java.util.HashMap;
 import generic.ControlSignals;
+import generic.Statistics;
 
 import processor.Processor;
+
 
 public class Execute {
 	Processor containingProcessor;
@@ -54,6 +56,11 @@ public class Execute {
 			EX_OF_Latch.setBranchTaken(false);
 			
 			// Setting isBranchTaken
+			Statistics stats = new Statistics();
+			if (control.isBeq() || control.isBgt() || control.isBlt() || control.isBne()) {
+				stats.incrementNumOfBranch(1);
+			}
+			
 			if (control.isUBranch()) {
 				EX_IF_Latch.setBranchTaken(true);
 				EX_OF_Latch.setBranchTaken(true);
@@ -73,6 +80,10 @@ public class Execute {
 					EX_IF_Latch.setBranchTaken(true);
 					EX_OF_Latch.setBranchTaken(true);
 				}
+			}
+			
+			if (EX_IF_Latch.isBranchTaken() == true) {
+				stats.incrementNumOfBranchTaken(1);
 			}
 			
 			EX_IF_Latch.setIF_enable(true);
