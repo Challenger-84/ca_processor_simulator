@@ -9,8 +9,8 @@ public class Statistics {
 	static int numberOfCycles;
 	
 	
-	static int numOfBranch;
-	static int numOfBranchTaken;
+	static int numOfBranch = 0;
+	static int numOfBranchTaken = 0;
 
 	public static void printStatistics(String statFile)
 	{
