@@ -20,6 +20,16 @@ public class RegisterWrite {
 	{
 		if(MA_RW_Latch.isRW_enable())
 		{
+			
+			System.out.println("RW Ins: " + MA_RW_Latch.instruction);
+			
+			// End simulation if instruction is end
+			if (MA_RW_Latch.controlSignals().isEnd()) {
+				System.out.println("ending!");
+				Simulator.setSimulationComplete(true);
+				return;
+			}
+			
 			ControlSignals signals = MA_RW_Latch.controlSignals();
 			int instruction = MA_RW_Latch.getInstruction();
 			String inst_string = Integer.toBinaryString(instruction);
@@ -47,6 +57,11 @@ public class RegisterWrite {
 			
 			if (signals.isWb()) {
 				containingProcessor.getRegisterFile().setValue(address, data);
+			}
+
+			//unlock rd
+			if(containingProcessor.getRegisterLock(address) != 0){
+				containingProcessor.unlockRegister(address);
 			}
 			
 			MA_RW_Latch.setRW_enable(false);

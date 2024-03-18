@@ -9,12 +9,16 @@ public class InstructionFetch {
 	IF_OF_LatchType IF_OF_Latch;
 	EX_IF_LatchType EX_IF_Latch;
 	
+	int numOfIns;
+	
 	public InstructionFetch(Processor containingProcessor, IF_EnableLatchType iF_EnableLatch, IF_OF_LatchType iF_OF_Latch, EX_IF_LatchType eX_IF_Latch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.IF_EnableLatch = iF_EnableLatch;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.EX_IF_Latch = eX_IF_Latch;
+		
+		this.numOfIns = 0;
 	}
 	
 	public void performIF()
@@ -27,6 +31,8 @@ public class InstructionFetch {
 			IF_OF_Latch.setPC(currentPC);
 			
 			containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
+			
+			numOfIns++;
 			
 			//IF_EnableLatch.setIF_enable(false);
 			IF_OF_Latch.setOF_enable(true);
@@ -47,11 +53,18 @@ public class InstructionFetch {
 				IF_OF_Latch.setInstruction(0);
 				IF_OF_Latch.setPC(newPC);
 				
+				// If we take branch that means 2 wrong instructions came in
+				numOfIns -= 2;
+				
 				EX_IF_Latch.setIF_enable(false);
 			}
 			
 		}
 		
+	}
+	
+	public int getNumofInstructions() {
+		return numOfIns;
 	}
 
 }

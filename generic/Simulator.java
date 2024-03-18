@@ -54,9 +54,9 @@ public class Simulator {
 	
 	public static void simulate()
 	{
-		while(simulationComplete == false && Clock.getCurrentTime() < 10)
+		while(simulationComplete == false)
 		{
-			System.out.println("Cycle : " + Clock.getCurrentTime());
+			System.out.println("Cycle : " + (Clock.getCurrentTime() + 1 + "----------------------------------"));
 			processor.getIFUnit().performBranch();
 			processor.getRWUnit().performRW();
 			processor.getMAUnit().performMA();
@@ -71,7 +71,7 @@ public class Simulator {
 		// set statistics
 		Statistics stats = new Statistics();
 		stats.setNumberOfCycles((int) Clock.getCurrentTime());
-		stats.setNumberOfInstructions((int) Clock.getCurrentTime());
+		stats.setNumberOfInstructions((int) processor.getIFUnit().getNumofInstructions());
 	}
 	
 	public static void setSimulationComplete(boolean value)

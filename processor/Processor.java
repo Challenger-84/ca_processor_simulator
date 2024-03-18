@@ -3,6 +3,7 @@ package processor;
 import processor.memorysystem.MainMemory;
 import processor.pipeline.EX_IF_LatchType;
 import processor.pipeline.EX_MA_LatchType;
+import processor.pipeline.EX_OF_LatchType;
 import processor.pipeline.Execute;
 import processor.pipeline.IF_EnableLatchType;
 import processor.pipeline.IF_OF_LatchType;
@@ -23,8 +24,10 @@ public class Processor {
 	IF_OF_LatchType IF_OF_Latch;
 	OF_EX_LatchType OF_EX_Latch;
 	EX_MA_LatchType EX_MA_Latch;
-	EX_IF_LatchType EX_IF_Latch;
 	MA_RW_LatchType MA_RW_Latch;
+	
+	EX_IF_LatchType EX_IF_Latch;
+	EX_OF_LatchType EX_OF_Latch;
 	
 	InstructionFetch IFUnit;
 	OperandFetch OFUnit;
@@ -32,7 +35,7 @@ public class Processor {
 	MemoryAccess MAUnit;
 	RegisterWrite RWUnit;
 	
-	boolean[] register_locks;  
+	int[] register_locks;  
 	
 	public Processor()
 	{
@@ -44,16 +47,18 @@ public class Processor {
 		IF_OF_Latch = new IF_OF_LatchType();
 		OF_EX_Latch = new OF_EX_LatchType();
 		EX_MA_Latch = new EX_MA_LatchType();
-		EX_IF_Latch = new EX_IF_LatchType();
 		MA_RW_Latch = new MA_RW_LatchType();
 		
+		EX_IF_Latch = new EX_IF_LatchType();
+		EX_OF_Latch = new EX_OF_LatchType();
+		
 		IFUnit = new InstructionFetch(this, IF_EnableLatch, IF_OF_Latch, EX_IF_Latch);
-		OFUnit = new OperandFetch(this, IF_OF_Latch, OF_EX_Latch);
-		EXUnit = new Execute(this, OF_EX_Latch, EX_MA_Latch, EX_IF_Latch);
+		OFUnit = new OperandFetch(this, IF_OF_Latch, OF_EX_Latch, IF_EnableLatch, EX_OF_Latch);
+		EXUnit = new Execute(this, OF_EX_Latch, EX_MA_Latch, EX_IF_Latch, EX_OF_Latch);
 		MAUnit = new MemoryAccess(this, EX_MA_Latch, MA_RW_Latch);
 		RWUnit = new RegisterWrite(this, MA_RW_Latch, IF_EnableLatch);
 
-		register_locks = new boolean[32];  
+		register_locks = new int[32];  
 		
 	}
 	
@@ -100,17 +105,23 @@ public class Processor {
 		return RWUnit;
 	}
 	
-	public boolean getRegisterLock(int reg_addr) {
+	public int getRegisterLock(int reg_addr) {
 		if (reg_addr < 32){
 			return register_locks[reg_addr];
 		} else {
-			return false;
+			return 0;
 		}
 	}
 	
-	public void setRegisterLock(int reg_addr, boolean lock) {
+	public void lockRegister(int reg_addr) {
 		if (reg_addr < 32){
-			register_locks[reg_addr] = lock;
+			register_locks[reg_addr] += 1;
+		}
+	}
+	
+	public void unlockRegister(int reg_addr) {
+		if (reg_addr < 32){
+			register_locks[reg_addr] -= 1;
 		}
 	}
 

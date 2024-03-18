@@ -9,13 +9,20 @@ public class OperandFetch {
 	IF_OF_LatchType IF_OF_Latch;
 	OF_EX_LatchType OF_EX_Latch;
 	ControlUnit control_unit;
+	IF_EnableLatchType IF_EnableLatch;
+	EX_OF_LatchType EX_OF_Latch;
+	
+	boolean operand_locked = false;
 
 	
-	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch)
+	public OperandFetch(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, IF_EnableLatchType iF_EnableLatch, EX_OF_LatchType eX_OF_Latch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.OF_EX_Latch = oF_EX_Latch;
+		this.IF_EnableLatch = iF_EnableLatch;
+		this.EX_OF_Latch = eX_OF_Latch;
+		
 		this.control_unit = new ControlUnit();
 	}
 	
@@ -23,6 +30,13 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			
+			System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
+			
+			if (EX_OF_Latch.isBranchTaken()) {
+				sendNop();
+				return;
+			}
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
@@ -54,6 +68,10 @@ public class OperandFetch {
 			//branchTarget
 			int offset;
 			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
+
+			// what if ubranch where rd value is used ?? check ://
+
+			//jmp, offset = rd+imm
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
 				String offset_32;
@@ -64,7 +82,11 @@ public class OperandFetch {
 					offset_32 = "1".repeat(10) + offset_str;
 				} 
 				offset = Integer.parseUnsignedInt(offset_32, 2);
-				offset += containingProcessor.getRegisterFile().getValue(rd);
+				if(containingProcessor.getRegisterLock(rd) == 0){
+					offset += containingProcessor.getRegisterFile().getValue(rd);
+				}else{
+					offset = 0;
+				}
 
 			} else {
 				offset = immx;
@@ -75,32 +97,116 @@ public class OperandFetch {
 		    //reg operands
 			String rs1String = inst_string.substring(5,10);
 			String rs2String = inst_string.substring(10,15);
-//			String rdString = inst_string.substring(15,20);
 
 			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
 			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
+			int op1;
+			int op2;
 			
-			int op1 = containingProcessor.getRegisterFile().getValue(rs1);
-			int op2 = containingProcessor.getRegisterFile().getValue(rs2);
+			if (operand_locked) {
+				sendNop();
+				if(containingProcessor.getRegisterLock(rs1) == 0 && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == 0)){
+					operand_locked = false;
+				}
+				return;
+			}
+			
+			int rd_address;
+			String rdString;
+			if (control.isImmediate()) {
+				rdString = inst_string.substring(10,15);
+			} else {
+				rdString = inst_string.substring(15,20);
+			}
+			rd_address = Integer.parseInt(rdString, 2);
 
-			// End simulation if instruction is end
-//			if (control.isEnd()) {
-//				Simulator.setSimulationComplete(true);
-//			}
+			
+			if (control.isSt()) {
+				if (containingProcessor.getRegisterLock(rs1) == 0 && containingProcessor.getRegisterLock(rs2) == 0) {
+					op1 = containingProcessor.getRegisterFile().getValue(rs1);
+					op2 = containingProcessor.getRegisterFile().getValue(rs2);
+					
+					// Setting the next Latch
+					OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+					OF_EX_Latch.setOp1(op1);
+					OF_EX_Latch.setOp2(op2);
+					OF_EX_Latch.setBranchTarget(branchTarget);
+					OF_EX_Latch.setImmx(immx);
+					OF_EX_Latch.setControl(control);
+					OF_EX_Latch.setInstruction(instruction);
+					
+					IF_EnableLatch.setIF_enable(true);
+					IF_OF_Latch.setOF_enable(false);
+				} else {
+					operand_locked = true;
+					
+					IF_EnableLatch.setIF_enable(false);//disable IF unit
+					IF_OF_Latch.setOF_enable(true);
+					sendNop();
+					
+					OF_EX_Latch.setEX_enable(true);
+					
+					return;
+				}
+			}
+			else {
+				if(containingProcessor.getRegisterLock(rs1) == 0 && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == 0)){
+					op1 = containingProcessor.getRegisterFile().getValue(rs1);
+					op2 = containingProcessor.getRegisterFile().getValue(rs2);
+					
+					// Setting the next Latch
+					OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+					OF_EX_Latch.setOp1(op1);
+					OF_EX_Latch.setOp2(op2);
+					OF_EX_Latch.setBranchTarget(branchTarget);
+					OF_EX_Latch.setImmx(immx);
+					OF_EX_Latch.setControl(control);
+					OF_EX_Latch.setInstruction(instruction);
+					
+					IF_EnableLatch.setIF_enable(true);
+					IF_OF_Latch.setOF_enable(false);
+				}
+				else{
+					// passing add %x0 %x0 %x0 (nop)
+					operand_locked = true;
+					
+					sendNop();
+					IF_EnableLatch.setIF_enable(false);//disable IF unit
+					IF_OF_Latch.setOF_enable(true);
+					
+					OF_EX_Latch.setEX_enable(true);
+					
+					return;
 
-			// Setting the next Latch
-			OF_EX_Latch.setPC(IF_OF_Latch.getPC());
-			OF_EX_Latch.setOp1(op1);
-			OF_EX_Latch.setOp2(op2);
-			OF_EX_Latch.setBranchTarget(branchTarget);
-			OF_EX_Latch.setImmx(immx);
-			OF_EX_Latch.setControl(control);
-			OF_EX_Latch.setInstruction(instruction);
+				}
+			}
+
 			
+			//locking rd
+			if(rd_address != 0 && control.isWb()){
+				containingProcessor.lockRegister(rd_address);
+			}
 			
-			IF_OF_Latch.setOF_enable(false);
+			// If end disable IF
+			if (control.isEnd()) {
+				IF_EnableLatch.setIF_enable(false);//disable IF unit
+			}
+
 			OF_EX_Latch.setEX_enable(true);
+			
 		}
+	}
+	
+	private void sendNop() {
+		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+		OF_EX_Latch.setOp1(0);
+		OF_EX_Latch.setOp2(0);
+		OF_EX_Latch.setBranchTarget(0);
+		OF_EX_Latch.setImmx(0);
+		OF_EX_Latch.setControl(control_unit.getControlSignals(0));
+		OF_EX_Latch.setInstruction(0);
+		
+		OF_EX_Latch.setEX_enable(true);
 	}
 	
 }
