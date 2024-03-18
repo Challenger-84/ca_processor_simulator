@@ -21,7 +21,7 @@ public class Statistics {
 			
 			writer.println("Number of instructions executed = " + numberOfInstructions);
 			writer.println("Number of cycles taken = " + numberOfCycles);
-			writer.println("Number of nops instructions = " + numberOfNops);
+			writer.println("Number of nop instructions = " + numberOfNops);
 			
 			writer.println("Number of Branch Statements = " + numOfBranch);
 			writer.println("Number of Branch Taken = " + numOfBranchTaken);
@@ -44,12 +44,10 @@ public class Statistics {
 	public void setNumberOfCycles(int numberOfCycles) {
 		Statistics.numberOfCycles = numberOfCycles;
 	}
-<<<<<<< HEAD
 
 	public void incrementNumberOfNops(int numberOfNops) {
-		numberOfNops += 1;
-		Statistics.numberOfNops = numberOfNops;
-=======
+		Statistics.numberOfNops += numberOfNops;
+	}
 	
 	public void incrementNumOfBranch(int increment_val) {
 		Statistics.numOfBranch += increment_val;
@@ -57,6 +55,5 @@ public class Statistics {
 	
 	public void incrementNumOfBranchTaken(int increment_val) {
 		Statistics.numOfBranchTaken += increment_val;
->>>>>>> e533df576ed4980c96639fa0b6fee6da03565ca4
 	}
 }
