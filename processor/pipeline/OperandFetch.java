@@ -2,6 +2,7 @@ package processor.pipeline;
 
 import generic.ControlSignals;
 import processor.Processor;
+import generic.Statistics;
 
 public class OperandFetch {
 	Processor containingProcessor;
@@ -197,6 +198,8 @@ public class OperandFetch {
 	}
 	
 	private void sendNop() {
+		Statistics stats = new Statistics();
+		stats.incrementNumberOfNops(1);
 		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 		OF_EX_Latch.setOp1(0);
 		OF_EX_Latch.setOp2(0);

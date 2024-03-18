@@ -7,6 +7,7 @@ public class Statistics {
 	// TODO add your statistics here
 	static int numberOfInstructions;
 	static int numberOfCycles;
+	static int numberOfNops;
 	
 	
 	static int numOfBranch = 0;
@@ -20,6 +21,7 @@ public class Statistics {
 			
 			writer.println("Number of instructions executed = " + numberOfInstructions);
 			writer.println("Number of cycles taken = " + numberOfCycles);
+			writer.println("Number of nop instructions = " + numberOfNops);
 			
 			writer.println("Number of Branch Statements = " + numOfBranch);
 			writer.println("Number of Branch Taken = " + numOfBranchTaken);
@@ -41,6 +43,10 @@ public class Statistics {
 
 	public void setNumberOfCycles(int numberOfCycles) {
 		Statistics.numberOfCycles = numberOfCycles;
+	}
+
+	public void incrementNumberOfNops(int numberOfNops) {
+		Statistics.numberOfNops += numberOfNops;
 	}
 	
 	public void incrementNumOfBranch(int increment_val) {
