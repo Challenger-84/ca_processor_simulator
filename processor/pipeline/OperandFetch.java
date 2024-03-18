@@ -143,6 +143,8 @@ public class OperandFetch {
 					IF_EnableLatch.setIF_enable(false);//disable IF unit
 					IF_OF_Latch.setOF_enable(true);
 					sendNop();
+					Statistics stats = new Statistics();
+					stats.incrementNumOfDataHazards(1);
 					
 					OF_EX_Latch.setEX_enable(true);
 					
@@ -171,6 +173,8 @@ public class OperandFetch {
 					operand_locked = true;
 					
 					sendNop();
+					Statistics stats = new Statistics();
+					stats.incrementNumOfDataHazards(1);
 					IF_EnableLatch.setIF_enable(false);//disable IF unit
 					IF_OF_Latch.setOF_enable(true);
 					
@@ -200,6 +204,7 @@ public class OperandFetch {
 	private void sendNop() {
 		Statistics stats = new Statistics();
 		stats.incrementNumberOfNops(1);
+		
 		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 		OF_EX_Latch.setOp1(0);
 		OF_EX_Latch.setOp2(0);

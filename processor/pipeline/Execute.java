@@ -57,7 +57,7 @@ public class Execute {
 			
 			// Setting isBranchTaken
 			Statistics stats = new Statistics();
-			if (control.isBeq() || control.isBgt() || control.isBlt() || control.isBne()) {
+			if (control.isBeq() || control.isBgt() || control.isBlt() || control.isBne() || control.isUBranch()) {
 				stats.incrementNumOfBranch(1);
 			}
 			

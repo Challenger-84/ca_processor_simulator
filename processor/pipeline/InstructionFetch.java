@@ -1,6 +1,7 @@
 package processor.pipeline;
 
 import processor.Processor;
+import generic.Statistics;
 
 public class InstructionFetch {
 	
@@ -47,6 +48,10 @@ public class InstructionFetch {
 		if(EX_IF_Latch.isIF_enable()) 
 		{	
 			if (EX_IF_Latch.isBranchTaken()) {
+				
+				Statistics stats = new Statistics();
+				stats.incrementNumberOfNops(1);
+				
 				int newPC = EX_IF_Latch.branchTarget();
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);
 				
