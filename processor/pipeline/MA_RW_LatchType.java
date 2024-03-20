@@ -12,12 +12,18 @@ public class MA_RW_LatchType {
 	int ldResult;
 	int ALUresult;
 	
+	boolean writeTox31;
+	int x31_value;
+	
 	ControlSignals controlSignals;
 	
 	public MA_RW_LatchType()
 	{
 		RW_enable = false;
 		ldResult = 0;
+
+		writeTox31 = false;
+		x31_value = 0;
 	}
 
 	public boolean isRW_enable() {
@@ -66,6 +72,22 @@ public class MA_RW_LatchType {
 	
 	public void setControlSignals(ControlSignals signals) {
 		controlSignals = signals;
+	}
+	
+	public void setWriteTox31(boolean value) {
+		writeTox31 = value;
+	}
+	
+	public boolean getWriteTox31() {
+		return writeTox31;
+	}
+	
+	public void setx31(int value) {
+		x31_value = value;
+	}
+	
+	public int getx31() {
+		return x31_value;
 	}
 	
 }

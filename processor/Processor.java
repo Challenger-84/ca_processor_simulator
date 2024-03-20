@@ -121,7 +121,11 @@ public class Processor {
 	
 	public void unlockRegister(int reg_addr) {
 		if (reg_addr < 32){
-			register_locks[reg_addr] -= 1;
+			if (register_locks[reg_addr] > 0) {
+				register_locks[reg_addr] -= 1;
+			} else {
+				register_locks[reg_addr] = 0;
+			}
 		}
 	}
 

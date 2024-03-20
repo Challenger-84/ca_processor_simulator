@@ -38,6 +38,8 @@ public class MemoryAccess {
 			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUResult());
 			MA_RW_Latch.setPC(EX_MA_Latch.getPC());
 			MA_RW_Latch.setInstruction(EX_MA_Latch.getInstruction());
+			MA_RW_Latch.setWriteTox31(EX_MA_Latch.getWriteTox31());
+			MA_RW_Latch.setx31(EX_MA_Latch.getx31());
 			
 			MA_RW_Latch.setRW_enable(true);
 			EX_MA_Latch.setMA_enable(false);

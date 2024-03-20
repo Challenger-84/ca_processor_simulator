@@ -13,6 +13,9 @@ public class EX_MA_LatchType {
 	
 	int storeVal;
 	
+	boolean writeTox31;
+	int x31_value;
+	
 	ControlSignals controlSignals;
 	
 	public EX_MA_LatchType()
@@ -20,6 +23,9 @@ public class EX_MA_LatchType {
 		MA_enable = false;
 		ALUresult = 0;
 		storeVal = 0;
+		
+		writeTox31 = false;
+		x31_value = 0;
 	}
 
 	public boolean isMA_enable() {
@@ -68,6 +74,22 @@ public class EX_MA_LatchType {
 	
 	public void setstoreVal(int value) {
 		storeVal = value;
+	}
+	
+	public void setWriteTox31(boolean value) {
+		writeTox31 = value;
+	}
+	
+	public boolean getWriteTox31() {
+		return writeTox31;
+	}
+	
+	public void setx31(int value) {
+		x31_value = value;
+	}
+	
+	public int getx31() {
+		return x31_value;
 	}
 
 }

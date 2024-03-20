@@ -88,6 +88,8 @@ public class Execute {
 			
 			EX_IF_Latch.setIF_enable(true);
 			
+			EX_MA_Latch.setWriteTox31(false);
+			
 			EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
 			
 			// Pass other data to next latch
@@ -135,7 +137,8 @@ public class Execute {
             return (int) result;
         }
         if (signal.get("div")) {
-        	containingProcessor.getRegisterFile().setValue(31, op1 % op2);    // Setting the remainder to x31 register
+        	EX_MA_Latch.setWriteTox31(true); 		
+        	EX_MA_Latch.setx31(op1%op2); 							// Setting the remainder to x31 register
             return op1/op2;
         }
         if (signal.get("and")) {

@@ -58,10 +58,17 @@ public class RegisterWrite {
 			if (signals.isWb()) {
 				containingProcessor.getRegisterFile().setValue(address, data);
 			}
+			
 
 			//unlock rd
 			if(containingProcessor.getRegisterLock(address) != 0){
 				containingProcessor.unlockRegister(address);
+			}
+			
+			// Write to x31 if needed to be written to
+			if (MA_RW_Latch.getWriteTox31()) {
+				containingProcessor.getRegisterFile().setValue(31, MA_RW_Latch.getx31());
+				containingProcessor.unlockRegister(31);					//unlock x31
 			}
 			
 			MA_RW_Latch.setRW_enable(false);

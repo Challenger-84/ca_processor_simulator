@@ -104,6 +104,8 @@ public class OperandFetch {
 			int op2;
 			
 			if (operand_locked) {
+				Statistics stats = new Statistics();
+				stats.incrementNumOfDataHazards(1);
 				sendNop();
 				if(containingProcessor.getRegisterLock(rs1) == 0 && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == 0)){
 					operand_locked = false;
@@ -186,10 +188,16 @@ public class OperandFetch {
 			}
 
 			
-			//locking rd
+			// Locking rd
 			if(rd_address != 0 && control.isWb()){
 				containingProcessor.lockRegister(rd_address);
 			}
+			
+			// Locking x31 if it is a divide instruction
+			if (control.getALUSignals().get("div")) {
+				containingProcessor.lockRegister(31);
+			}
+			
 			
 			// If end disable IF
 			if (control.isEnd()) {
