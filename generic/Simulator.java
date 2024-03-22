@@ -3,6 +3,7 @@ package generic;
 import processor.Clock;
 import processor.Processor;
 import generic.Statistics;
+import generic.EventQueue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,10 +16,13 @@ public class Simulator {
 	static Processor processor;
 	static boolean simulationComplete;
 	
+	static EventQueue eventQueue;
+	
 	public static void setupSimulation(String assemblyProgramFile, Processor p)
 	{
 		Simulator.processor = p;
 		loadProgram(assemblyProgramFile);
+		eventQueue = new EventQueue();
 		
 		simulationComplete = false;
 	}
@@ -61,6 +65,7 @@ public class Simulator {
 			processor.getRWUnit().performRW();
 			processor.getMAUnit().performMA();
 			processor.getEXUnit().performEX();
+			eventQueue.processEvents();
 			processor.getOFUnit().performOF();
 			processor.getIFUnit().performIF();
 			Clock.incrementClock();
