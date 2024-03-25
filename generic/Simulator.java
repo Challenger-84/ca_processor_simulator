@@ -83,4 +83,9 @@ public class Simulator {
 	{
 		simulationComplete = value;
 	}
+	
+	public static EventQueue getEventQueue() {
+		return eventQueue;
+	}
+
 }

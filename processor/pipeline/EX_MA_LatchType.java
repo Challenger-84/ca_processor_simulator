@@ -5,6 +5,7 @@ import generic.ControlSignals;
 public class EX_MA_LatchType {
 	
 	boolean MA_enable;
+	boolean MA_busy;
 	
 	int pc;
 	int instruction;
@@ -91,5 +92,13 @@ public class EX_MA_LatchType {
 	public int getx31() {
 		return x31_value;
 	}
+	
+    public boolean isMABusy() {
+        return MA_busy;
+    }
+
+    public void setMABusy(boolean isMA_busy) {
+        this.MA_busy = isMA_busy;
+    }
 
 }

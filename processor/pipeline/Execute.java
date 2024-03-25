@@ -1,13 +1,23 @@
 package processor.pipeline;
 
 import java.util.HashMap;
+
+import configuration.Configuration;
 import generic.ControlSignals;
 import generic.Statistics;
+import generic.Simulator;
+
+// Importing classes related to Events
+import generic.Element;
+import generic.Event;
+import generic.ExecutionCompleteEvent;
+import processor.Clock;
+
 
 import processor.Processor;
 
 
-public class Execute {
+public class Execute implements Element{
 	Processor containingProcessor;
 	OF_EX_LatchType OF_EX_Latch;
 	EX_MA_LatchType EX_MA_Latch;
@@ -26,6 +36,12 @@ public class Execute {
 	public void performEX()
 	{
 		if (OF_EX_Latch.isEX_enable()) {
+			
+			
+			if (OF_EX_Latch.isEXBusy()) {
+				System.out.println("EX Ins: (BUSY) " + OF_EX_Latch.getInstruction());
+				return;
+			}
 			
 			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
 			
@@ -88,24 +104,27 @@ public class Execute {
 			
 			EX_IF_Latch.setIF_enable(true);
 			
-			EX_MA_Latch.setWriteTox31(false);
-			
-			EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
-			
 			// Pass other data to next latch
+			EX_MA_Latch.setWriteTox31(false);
 			EX_MA_Latch.setstoreVal(OF_EX_Latch.getOp1());
 			EX_MA_Latch.setPC(OF_EX_Latch.getPC());
 			EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
 			EX_MA_Latch.setControlSignals(control);
-	
+			EX_MA_Latch.setMA_enable(false);
+			//EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
 			
-			EX_MA_Latch.setMA_enable(true);
+			ArithmeticLogicUnit(control.getALUSignals(), op1, op2);
+			
+			
 			OF_EX_Latch.setEX_enable(false);
 		}
 	}
 
 	
-	private int ArithmeticLogicUnit(HashMap<String, Boolean> signal, int op1, int op2) {
+	private void ArithmeticLogicUnit(HashMap<String, Boolean> signal, int op1, int op2) {
+		
+		int output = 0;
+		int latency = Configuration.ALU_latency;
 		
 		// Get the operation that needs to be performed
 		if (signal.get("add")) {
@@ -115,59 +134,98 @@ public class Execute {
             if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
             }
-            return (int) result;
+            
+            output = (int) result;
             
         }
-        if (signal.get("sub")) {
+		else if (signal.get("sub")) {
         	long long_op1 = (long) op1;
 			long long_op2 = (long) op2;
             long result =  long_op1 - long_op2;
             if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
             }
-            return (int) result;
+            
+            output = (int) result;
         }
-        if (signal.get("mul")) {
+		else if (signal.get("mul")) {
         	long long_op1 = (long) op1;
 			long long_op2 = (long) op2;
             long result =  long_op1 * long_op2;
             if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
             	containingProcessor.getRegisterFile().setValue(31, 1);  // Set x31 to 1 in case of overflow
             }
-            return (int) result;
+            
+            output = (int) result;
+            latency = Configuration.multiplier_latency;
         }
-        if (signal.get("div")) {
+		else if (signal.get("div")) {
         	EX_MA_Latch.setWriteTox31(true); 		
         	EX_MA_Latch.setx31(op1%op2); 							// Setting the remainder to x31 register
-            return op1/op2;
+            int result = op1/op2;
+            
+            output = (int) result;
+            latency = Configuration.divider_latency;
         }
-        if (signal.get("and")) {
-        	return op1 & op2;
+		else if (signal.get("and")) {
+        	output = op1 & op2;
         }
-        if (signal.get("or")) {
-        	return op1 | op2;
+		else if (signal.get("or")) {
+        	output = op1 | op2;
         }
-        if (signal.get("xor")) {
-        	return op1 ^ op2;
+		else if (signal.get("xor")) {
+        	output = op1 ^ op2;
         }
-        if (signal.get("slt")) {
+		else if (signal.get("slt")) {
         	if (op1 < op2) {
-        		return 1;
+        		output = 1;
         	} else {
-        		return 0;
+        		output = 0;
         	}
         }
-        if (signal.get("sll")) {
-        	return op1 << op2;
+		else if (signal.get("sll")) {
+        	output = op1 << op2;
         }
-        if (signal.get("srl")) {
-        	return op1 >>> op2;
+		else if (signal.get("srl")) {
+        	output = op1 >>> op2;
         }
-        if (signal.get("sra")) {
-        	return op1 >> op2;
+		else if (signal.get("sra")) {
+        	output = op1 >> op2;
+        } else {
+        	
+        	// No need for ALU
+        	EX_MA_Latch.setMA_enable(true);
+        	return;
+        	
         }
 
-		return 0;
+        Simulator.getEventQueue().addEvent(
+        		new ExecutionCompleteEvent(
+        				Clock.getCurrentTime() + latency,
+        				this,
+        				this,
+        				output)
+        		);
+        OF_EX_Latch.setEXBusy(true);
 	}
-	
+
+	@Override
+	public void handleEvent(Event e) {
+		
+		if (EX_MA_Latch.isMABusy()) {
+			e.setEventTime(e.getEventTime() + 1);
+			Simulator.getEventQueue().addEvent(e);
+		}
+		if (e.getEventType() == Event.EventType.ExecutionComplete) {
+			
+			ExecutionCompleteEvent event = (ExecutionCompleteEvent) e;
+			
+			EX_MA_Latch.setALUResult(event.getALUResult());
+			EX_MA_Latch.setMA_enable(true);
+			
+			OF_EX_Latch.setEXBusy(false);
+		}
+		
+	}
+
 }
