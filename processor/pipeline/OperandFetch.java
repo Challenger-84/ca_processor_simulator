@@ -36,7 +36,7 @@ public class OperandFetch {
 			
 			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
 			
-			System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
+			//System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
 			
 			if (EX_OF_Latch.isBranchTaken()) {
 				sendNop();
