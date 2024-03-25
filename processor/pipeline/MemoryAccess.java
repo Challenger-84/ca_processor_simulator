@@ -1,9 +1,21 @@
 package processor.pipeline;
 
+import configuration.Configuration;
+import generic.Simulator;
+
 import processor.Processor;
 import generic.Simulator;
 
-public class MemoryAccess {
+// Importing classes related to Events
+import generic.Element;
+import generic.Event;
+import generic.MemoryReadEvent;
+import generic.MemoryResponseEvent;
+import generic.MemoryWriteEvent;
+
+import processor.Clock;
+
+public class MemoryAccess implements Element {
 	Processor containingProcessor;
 	EX_MA_LatchType EX_MA_Latch;
 	MA_RW_LatchType MA_RW_Latch;
@@ -19,20 +31,13 @@ public class MemoryAccess {
 	{
 		if (EX_MA_Latch.isMA_enable()) {
 			
+			if (EX_MA_Latch.isMABusy()) {
+				return;
+			}
 			
 			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
-			
-			if (EX_MA_Latch.controlSignals().isLd()) {
-				
-				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
-				MA_RW_Latch.setLoadResult(ldResult);
-			}
-			
-			if (EX_MA_Latch.controlSignals().isSt()) {
-			
-				containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
-			}
-			
+
+
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
 			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUResult());
@@ -41,7 +46,62 @@ public class MemoryAccess {
 			MA_RW_Latch.setWriteTox31(EX_MA_Latch.getWriteTox31());
 			MA_RW_Latch.setx31(EX_MA_Latch.getx31());
 			
-			MA_RW_Latch.setRW_enable(true);
+			if (EX_MA_Latch.controlSignals().isLd()) {
+				
+				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
+				//MA_RW_Latch.setLoadResult(ldResult);
+
+				//
+				Simulator.getEventQueue().addEvent(
+					new MemoryReadEvent(
+							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
+							this,
+							containingProcessor .getMainMemory(),
+							ldResult)
+					);
+			    EX_MA_Latch.setMABusy(true);
+			}
+			
+			if (EX_MA_Latch.controlSignals().isSt()) {
+			
+				//containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
+				
+				Simulator.getEventQueue().addEvent(
+					new MemoryWriteEvent(
+							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
+							this,
+							containingProcessor .getMainMemory(),
+							EX_MA_Latch.ALUResult(),
+							EX_MA_Latch.storeVal()
+							)
+					);
+				EX_MA_Latch.setMABusy(true);
+			}
+
+			
+			@Override
+			public void handleEvent(Event e) {
+
+				if (MA_RW_Latch.isRWbusy()){
+					e.setEventTime(Clock.getCurrentTime() + 1);
+					Simulator.getEventQueue().addEvent(e);			
+				}
+				else {
+					MemoryResponseEvent event =  (MemoryResponseEvent)e;
+
+					if (EX_MA_Latch.controlSignals().isLd()){
+						MA_RW_Latch.setLoadResult(ldResult);
+					}
+					if (EX_MA_Latch.controlSignals().isSt()){
+						containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
+					}
+					
+					MA_RW_Latch.setRW_enable(true);
+					EX_MA_Latch.setMABusy(false);
+				}
+			}
+			
+			//MA_RW_Latch.setRW_enable(true);
 			EX_MA_Latch.setMA_enable(false);
 			
 		}
