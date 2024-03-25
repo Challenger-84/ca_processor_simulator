@@ -20,6 +20,9 @@ public class RegisterWrite {
 	{
 		if(MA_RW_Latch.isRW_enable())
 		{
+			if (MA_RW_Latch.isRWBusy()) {
+				return;
+			}
 			
 			System.out.println("RW Ins: " + MA_RW_Latch.instruction);
 			

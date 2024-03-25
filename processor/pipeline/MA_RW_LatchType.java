@@ -90,4 +90,12 @@ public class MA_RW_LatchType {
 		return x31_value;
 	}
 	
+    public boolean isRWBusy() {
+        return RW_busy;
+    }
+
+    public void setRWBusy(boolean isRW_busy) {
+        this.RW_busy = isRW_busy;
+    }
+
 }
