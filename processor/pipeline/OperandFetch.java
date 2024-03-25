@@ -30,6 +30,11 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			if (IF_OF_Latch.isOFBusy()) {
+				return;
+			}
+			
+			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
 			
 			System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
 			

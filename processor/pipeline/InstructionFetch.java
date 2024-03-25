@@ -1,9 +1,20 @@
 package processor.pipeline;
 
 import processor.Processor;
+import processor.Clock;
 import generic.Statistics;
+import generic.Simulator;
+import configuration.Configuration;
 
-public class InstructionFetch {
+// imports regarding events
+import generic.Element;
+import generic.Event;
+import generic.MemoryReadEvent;
+import generic.MemoryResponseEvent;
+import generic.MemoryWriteEvent;
+
+
+public class InstructionFetch implements Element {
 	
 	Processor containingProcessor;
 	IF_EnableLatchType IF_EnableLatch;
@@ -25,9 +36,21 @@ public class InstructionFetch {
 	public void performIF()
 	{
 		if(IF_EnableLatch.isIF_enable())
-		{
+		{	
+			
+			if (IF_EnableLatch.isIFBusy()) {
+				return;
+			}
+			
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
-			int newInstruction = containingProcessor.getMainMemory().getWord(currentPC);
+			
+			Simulator.getEventQueue().addEvent(new MemoryReadEvent(
+					Clock.getCurrentTime() + Configuration.mainMemoryLatency,
+					this,
+					containingProcessor.getMainMemory(),
+					currentPC
+					));
+			
 			IF_OF_Latch.setInstruction(newInstruction);
 			IF_OF_Latch.setPC(currentPC);
 			
@@ -66,6 +89,21 @@ public class InstructionFetch {
 			
 		}
 		
+	}
+	
+	@Override
+	public void handleEvent(Event e) {
+		if (IF_OF_Latch.isOFBusy()) {
+			e.setEventTime(Clock.getCurrentTime() + 1);
+			Simulator.getEventQueue().addEvent(e);
+		} 
+		else 
+		{
+			if (e.getEventType() == Event.EventType.MemoryResponse) {
+				MemoryResponseEvent event = (MemoryResponseEvent) e;
+				return;
+			}
+		}	
 	}
 	
 	public int getNumofInstructions() {
