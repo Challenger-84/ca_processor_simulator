@@ -19,6 +19,8 @@ public class EX_MA_LatchType {
 	
 	ControlSignals controlSignals;
 	
+	boolean isNop;
+	
 	public EX_MA_LatchType()
 	{
 		MA_enable = false;
@@ -101,4 +103,11 @@ public class EX_MA_LatchType {
         this.MA_busy = isMA_busy;
     }
 
+    public boolean isNop() {
+    	return isNop;
+    }
+    
+    public void setNop(boolean isnop) {
+    	isNop = isnop;
+    }
 }

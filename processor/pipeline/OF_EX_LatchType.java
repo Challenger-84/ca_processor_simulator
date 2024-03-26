@@ -16,6 +16,8 @@ public class OF_EX_LatchType {
 	int op2;
 	ControlSignals control;
 	
+	boolean isNop;
+	
 	public OF_EX_LatchType()
 	{
 		EX_enable = false;
@@ -91,6 +93,14 @@ public class OF_EX_LatchType {
 
     public void setEXBusy(boolean isMA_busy) {
         this.EX_busy = isMA_busy;
+    }
+    
+    public boolean isNop() {
+    	return isNop;
+    }
+    
+    public void setNop(boolean isnop) {
+    	isNop = isnop;
     }
 
 }

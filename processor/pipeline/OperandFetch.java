@@ -30,16 +30,18 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
+			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
+
 			if (IF_OF_Latch.isOFBusy()) {
 				return;
 			}
 			
-			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
 			
 			//System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
 			
-			if (EX_OF_Latch.isBranchTaken()) {
+			if (EX_OF_Latch.isBranchTaken() || IF_OF_Latch.isNop()) {
 				sendNop();
+				EX_OF_Latch.setBranchTaken(false);
 				return;
 			}
 			
@@ -208,7 +210,8 @@ public class OperandFetch {
 			if (control.isEnd()) {
 				IF_EnableLatch.setIF_enable(false);//disable IF unit
 			}
-
+			
+			OF_EX_Latch.setNop(false);
 			OF_EX_Latch.setEX_enable(true);
 			
 		}
@@ -225,6 +228,7 @@ public class OperandFetch {
 		OF_EX_Latch.setImmx(0);
 		OF_EX_Latch.setControl(control_unit.getControlSignals(0));
 		OF_EX_Latch.setInstruction(0);
+		OF_EX_Latch.setNop(true);
 		
 		OF_EX_Latch.setEX_enable(true);
 	}

@@ -8,6 +8,8 @@ public class IF_OF_LatchType {
 	int pc;
 	int instruction;
 	
+	boolean isNop;
+	
 	public IF_OF_LatchType()
 	{
 		OF_enable = false;
@@ -45,6 +47,14 @@ public class IF_OF_LatchType {
 	
 	public void setPC(int pc) {
         this.pc = pc;
+    }
+	
+    public boolean isNop() {
+    	return isNop;
+    }
+    
+    public void setNop(boolean isnop) {
+    	isNop = isnop;
     }
 
 }

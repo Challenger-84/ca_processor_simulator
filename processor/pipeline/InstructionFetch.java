@@ -11,7 +11,6 @@ import generic.Element;
 import generic.Event;
 import generic.MemoryReadEvent;
 import generic.MemoryResponseEvent;
-import generic.MemoryWriteEvent;
 
 
 public class InstructionFetch implements Element {
@@ -22,6 +21,7 @@ public class InstructionFetch implements Element {
 	EX_IF_LatchType EX_IF_Latch;
 	
 	int numOfIns;
+	boolean branchTaken;
 	
 	public InstructionFetch(Processor containingProcessor, IF_EnableLatchType iF_EnableLatch, IF_OF_LatchType iF_OF_Latch, EX_IF_LatchType eX_IF_Latch)
 	{
@@ -31,6 +31,7 @@ public class InstructionFetch implements Element {
 		this.EX_IF_Latch = eX_IF_Latch;
 		
 		this.numOfIns = 0;
+		branchTaken = false;
 	}
 	
 	public void performIF()
@@ -57,6 +58,7 @@ public class InstructionFetch implements Element {
 			
 			numOfIns++;
 			
+			IF_OF_Latch.setNop(false);
 			IF_EnableLatch.setIFBusy(true);
 			
 			//IF_EnableLatch.setIF_enable(false);
@@ -71,6 +73,8 @@ public class InstructionFetch implements Element {
 		{	
 			if (EX_IF_Latch.isBranchTaken()) {
 				
+				branchTaken = true;
+				
 				Statistics stats = new Statistics();
 				stats.incrementNumberOfNops(1);
 				
@@ -78,7 +82,9 @@ public class InstructionFetch implements Element {
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);
 				
 				IF_OF_Latch.setInstruction(0);
+				IF_OF_Latch.setNop(true);
 				IF_OF_Latch.setPC(newPC);
+				
 				
 				// If we take branch that means 2 wrong instructions came in
 				numOfIns -= 2;
@@ -99,6 +105,12 @@ public class InstructionFetch implements Element {
 		else 
 		{
 			if (e.getEventType() == Event.EventType.MemoryResponse) {
+				if (branchTaken) {
+					IF_OF_Latch.setOF_enable(true);
+					IF_EnableLatch.setIFBusy(false);
+					branchTaken = false;
+					return;
+				}
 				MemoryResponseEvent event = (MemoryResponseEvent) e;
 				
 				System.out.println("instruction: " + event.getValue());

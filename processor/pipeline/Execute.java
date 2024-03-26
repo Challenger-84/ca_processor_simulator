@@ -45,6 +45,13 @@ public class Execute implements Element{
 			
 			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
 			
+			EX_MA_Latch.setNop(OF_EX_Latch.isNop());
+			
+			if (OF_EX_Latch.isNop()) {
+				EX_MA_Latch.setMA_enable(true);
+				return;
+			}
+			
 			ControlSignals control = OF_EX_Latch.getControl();
 			
 			// Getting the operands
@@ -215,6 +222,7 @@ public class Execute implements Element{
 		if (EX_MA_Latch.isMABusy()) {
 			e.setEventTime(e.getEventTime() + 1);
 			Simulator.getEventQueue().addEvent(e);
+			return;
 		}
 		if (e.getEventType() == Event.EventType.ExecutionComplete) {
 			

@@ -36,8 +36,14 @@ public class MemoryAccess implements Element {
 			}
 			
 			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
-
-
+			
+			MA_RW_Latch.setNop(EX_MA_Latch.isNop());
+			if (EX_MA_Latch.isNop()) {
+				MA_RW_Latch.setRW_enable(true);
+				return;
+			}
+			
+			
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
 			MA_RW_Latch.setALUResult(EX_MA_Latch.ALUResult());
@@ -48,7 +54,7 @@ public class MemoryAccess implements Element {
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				
-				int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
+				//int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
 				//MA_RW_Latch.setLoadResult(ldResult);
 
 				//
@@ -57,12 +63,12 @@ public class MemoryAccess implements Element {
 							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
 							this,
 							containingProcessor .getMainMemory(),
-							ldResult)
+							EX_MA_Latch.ALUResult())
 					);
 			    EX_MA_Latch.setMABusy(true);
+			    MA_RW_Latch.setRW_enable(false);
 			}
-			
-			if (EX_MA_Latch.controlSignals().isSt()) {
+			else if (EX_MA_Latch.controlSignals().isSt()) {
 			
 				//containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
 				
@@ -76,34 +82,35 @@ public class MemoryAccess implements Element {
 							)
 					);
 				EX_MA_Latch.setMABusy(true);
+				MA_RW_Latch.setRW_enable(false);
 			}
-
-			
-			@Override
-			public void handleEvent(Event e) {
-
-				if (MA_RW_Latch.isRWbusy()){
-					e.setEventTime(Clock.getCurrentTime() + 1);
-					Simulator.getEventQueue().addEvent(e);			
-				}
-				else {
-					MemoryResponseEvent event =  (MemoryResponseEvent)e;
-
-					if (EX_MA_Latch.controlSignals().isLd()){
-						MA_RW_Latch.setLoadResult(ldResult);
-					}
-					if (EX_MA_Latch.controlSignals().isSt()){
-						containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
-					}
-					
-					MA_RW_Latch.setRW_enable(true);
-					EX_MA_Latch.setMABusy(false);
-				}
+			else{
+				MA_RW_Latch.setRW_enable(true);
 			}
 			
-			//MA_RW_Latch.setRW_enable(true);
+			
 			EX_MA_Latch.setMA_enable(false);
 			
+		}
+	}
+	
+	@Override
+	public void handleEvent(Event e) {
+
+		if (MA_RW_Latch.isRWBusy()){
+			e.setEventTime(Clock.getCurrentTime() + 1);
+			Simulator.getEventQueue().addEvent(e);			
+		}
+		else {
+			MemoryResponseEvent event =  (MemoryResponseEvent)e;
+			
+			// If it isn't a MemoryWrite event's Response then set load Result
+			if (!event.isWriteFinished()){
+				MA_RW_Latch.setLoadResult(event.getValue());
+			}
+			
+			MA_RW_Latch.setRW_enable(true);
+			EX_MA_Latch.setMABusy(false);
 		}
 	}
 

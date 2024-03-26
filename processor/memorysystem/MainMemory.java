@@ -50,11 +50,19 @@ public class MainMemory implements Element{
 					Clock.getCurrentTime(),
 					this,
 					event.getRequestingElement(),
-					getWord(event.getAddressToReadFrom())
+					getWord(event.getAddressToReadFrom()),
+					false
 					));
 		} else if (e.getEventType() == Event.EventType.MemoryWrite) {
 			MemoryWriteEvent event = (MemoryWriteEvent) e;
 			setWord(event.getAddressToWriteTo(), event.getValue());
+			Simulator.getEventQueue().addEvent(new MemoryResponseEvent(
+					Clock.getCurrentTime(),
+					this,
+					event.getRequestingElement(),
+					0,
+					true
+					));
 		}
 	}
 }

@@ -5,7 +5,8 @@ import generic.ControlSignals;
 public class MA_RW_LatchType {
 	
 	boolean RW_enable = false;
-		
+	boolean RW_Busy;	
+	
 	int pc;
 	int instruction;
 	
@@ -17,9 +18,13 @@ public class MA_RW_LatchType {
 	
 	ControlSignals controlSignals;
 	
+	boolean isNop;
+	
 	public MA_RW_LatchType()
 	{
 		RW_enable = false;
+		RW_Busy = false;
+		
 		ldResult = 0;
 
 		writeTox31 = false;
@@ -33,6 +38,7 @@ public class MA_RW_LatchType {
 	public void setRW_enable(boolean rW_enable) {
 		RW_enable = rW_enable;
 	}
+	
 
 	public int getPC() {
         return pc;
@@ -91,11 +97,19 @@ public class MA_RW_LatchType {
 	}
 	
     public boolean isRWBusy() {
-        return RW_busy;
+        return RW_Busy;
     }
 
     public void setRWBusy(boolean isRW_busy) {
-        this.RW_busy = isRW_busy;
+        this.RW_Busy = isRW_busy;
+    }
+    
+    public boolean isNop() {
+    	return isNop;
+    }
+    
+    public void setNop(boolean isnop) {
+    	isNop = isnop;
     }
 
 }
