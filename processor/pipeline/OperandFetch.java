@@ -48,6 +48,10 @@ public class OperandFetch {
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
 			
+			if (instruction == 0) {
+				System.out.println("hi");
+			}
+			
 			System.out.println("OF Ins: " + instruction);
 			
 			String inst_string = Integer.toBinaryString(instruction);

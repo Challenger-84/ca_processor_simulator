@@ -9,11 +9,15 @@ public class RegisterWrite {
 	MA_RW_LatchType MA_RW_Latch;
 	IF_EnableLatchType IF_EnableLatch;
 	
+	int numOfIns;
+	
 	public RegisterWrite(Processor containingProcessor, MA_RW_LatchType mA_RW_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.MA_RW_Latch = mA_RW_Latch;
 		this.IF_EnableLatch = iF_EnableLatch;
+		
+		this.numOfIns = 0;
 	}
 	
 	public void performRW()
@@ -21,15 +25,18 @@ public class RegisterWrite {
 		if(MA_RW_Latch.isRW_enable())
 		{
 			if (MA_RW_Latch.isRWBusy()) {
+				MA_RW_Latch.setRW_enable(false);
 				return;
 			}
 			
 			if (MA_RW_Latch.isNop()) {
+				MA_RW_Latch.setRW_enable(false);
 				return;
 			}
 			
 			System.out.println("RW Ins: " + MA_RW_Latch.instruction);
 			
+			numOfIns++;
 			
 			// End simulation if instruction is end
 			if (MA_RW_Latch.controlSignals().isEnd()) {
@@ -83,5 +90,10 @@ public class RegisterWrite {
 			//IF_EnableLatch.setIF_enable(true);
 		}
 	}
-
+	
+	public int getNumofInstructions() {
+		return numOfIns;
+	
+	}
+	
 }

@@ -43,14 +43,15 @@ public class Execute implements Element{
 				return;
 			}
 			
-			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
-			
 			EX_MA_Latch.setNop(OF_EX_Latch.isNop());
 			
 			if (OF_EX_Latch.isNop()) {
 				EX_MA_Latch.setMA_enable(true);
 				return;
 			}
+			
+			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
+			
 			
 			ControlSignals control = OF_EX_Latch.getControl();
 			

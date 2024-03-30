@@ -76,7 +76,7 @@ public class Simulator {
 		// set statistics
 		Statistics stats = new Statistics();
 		stats.setNumberOfCycles((int) Clock.getCurrentTime());
-		stats.setNumberOfInstructions((int) processor.getIFUnit().getNumofInstructions());
+		stats.setNumberOfInstructions((int) processor.getRWUnit().getNumofInstructions());
 	}
 	
 	public static void setSimulationComplete(boolean value)
