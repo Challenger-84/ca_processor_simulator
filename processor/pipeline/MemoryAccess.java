@@ -34,10 +34,10 @@ public class MemoryAccess implements Element {
 			if (EX_MA_Latch.isMABusy()) {
 				MA_RW_Latch.setNop(true);
 				MA_RW_Latch.setRW_enable(true);
+				EX_MA_Latch.setMA_enable(false);
 				return;
 			}
 			
-			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
 			
 			MA_RW_Latch.setNop(EX_MA_Latch.isNop());
 			if (EX_MA_Latch.isNop()) {
@@ -45,6 +45,7 @@ public class MemoryAccess implements Element {
 				return;
 			}
 			
+			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
 			
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());
@@ -67,8 +68,9 @@ public class MemoryAccess implements Element {
 							containingProcessor .getMainMemory(),
 							EX_MA_Latch.ALUResult())
 					);
-			    EX_MA_Latch.setMABusy(true);
-			    MA_RW_Latch.setRW_enable(false);
+				EX_MA_Latch.setMABusy(true);
+				MA_RW_Latch.setRW_enable(true);
+				MA_RW_Latch.setNop(true);;
 			}
 			else if (EX_MA_Latch.controlSignals().isSt()) {
 			
@@ -84,7 +86,8 @@ public class MemoryAccess implements Element {
 							)
 					);
 				EX_MA_Latch.setMABusy(true);
-				MA_RW_Latch.setRW_enable(false);
+				MA_RW_Latch.setRW_enable(true);
+				MA_RW_Latch.setNop(true);
 			}
 			else{
 				MA_RW_Latch.setRW_enable(true);
