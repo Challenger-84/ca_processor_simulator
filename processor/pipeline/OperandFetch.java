@@ -35,6 +35,7 @@ public class OperandFetch {
 
 			if (IF_OF_Latch.isOFBusy()) {
 				OF_EX_Latch.setEX_enable(true);
+				IF_EnableLatch.setIF_enable(false);
 				return;
 			}
 			
@@ -46,6 +47,9 @@ public class OperandFetch {
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
+			
+			
+			System.out.println("OF Ins: " + instruction);
 			
 			String inst_string = Integer.toBinaryString(instruction);
 			if (inst_string.length() != 32) {

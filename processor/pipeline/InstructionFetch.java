@@ -53,9 +53,13 @@ public class InstructionFetch implements Element {
 			
 			IF_OF_Latch.setPC(currentPC);
 			
-			containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
+			//containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
 			
 			IF_EnableLatch.setIFBusy(true);
+			IF_OF_Latch.setOF_enable(true);
+			IF_OF_Latch.setNop(true);
+			
+			//IF_EnableLatch.setIF_enable(false);
 			
 		}
 	}
@@ -85,9 +89,10 @@ public class InstructionFetch implements Element {
 	
 	@Override
 	public void handleEvent(Event e) {
-		if (IF_OF_Latch.isOFBusy()) {
+		if (IF_OF_Latch.isOFBusy() || !IF_EnableLatch.isIF_enable()) {
 			e.setEventTime(Clock.getCurrentTime() + 1);
 			Simulator.getEventQueue().addEvent(e);
+			IF_EnableLatch.setIF_enable(true);
 		} 
 		else 
 		{
@@ -100,6 +105,10 @@ public class InstructionFetch implements Element {
 					return;
 				}
 				MemoryResponseEvent event = (MemoryResponseEvent) e;
+				
+				System.out.println("instruction: " + event.getValue());
+				
+				containingProcessor.getRegisterFile().setProgramCounter(IF_OF_Latch.getPC() + 1);
 				
 				IF_OF_Latch.setInstruction(event.getValue());
 				IF_OF_Latch.setNop(false);

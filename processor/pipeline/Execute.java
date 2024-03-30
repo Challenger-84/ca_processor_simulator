@@ -47,6 +47,8 @@ public class Execute implements Element{
 			
 			if (EX_MA_Latch.isMABusy()) {
 				OF_EX_Latch.setEXWaiting(true);
+				EX_MA_Latch.setMA_enable(true);
+				EX_MA_Latch.setNop(true);
 				return;
 			}  else {
 				OF_EX_Latch.setEXWaiting(false);
@@ -119,7 +121,8 @@ public class Execute implements Element{
 			EX_MA_Latch.setPC(OF_EX_Latch.getPC());
 			EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
 			EX_MA_Latch.setControlSignals(control);
-			EX_MA_Latch.setMA_enable(false);
+			//EX_MA_Latch.setMA_enable(false);
+			//EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
 			
 			ArithmeticLogicUnit(control.getALUSignals(), op1, op2);
 			
@@ -215,6 +218,8 @@ public class Execute implements Element{
         				output)
         		);
         OF_EX_Latch.setEXBusy(true);
+        EX_MA_Latch.setMA_enable(true);
+        EX_MA_Latch.setNop(true);
 	}
 
 	@Override
