@@ -38,6 +38,7 @@ public class InstructionFetch implements Element {
 		{	
 			
 			if (IF_EnableLatch.isIFBusy()) {
+				IF_OF_Latch.setNop(true);
 				return;
 			}
 			
