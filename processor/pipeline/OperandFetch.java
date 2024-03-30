@@ -222,8 +222,8 @@ public class OperandFetch {
 	}
 	
 	private void sendNop() {
-		Statistics stats = new Statistics();
-		stats.incrementNumberOfNops(1);
+		// Statistics stats = new Statistics();
+		// stats.incrementNumberOfNops(1);
 		
 		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 		OF_EX_Latch.setOp1(0);
