@@ -10,6 +10,7 @@ public class RegisterWrite {
 	IF_EnableLatchType IF_EnableLatch;
 	
 	int numOfIns;
+	int numOfNops;
 	
 	public RegisterWrite(Processor containingProcessor, MA_RW_LatchType mA_RW_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
@@ -18,6 +19,7 @@ public class RegisterWrite {
 		this.IF_EnableLatch = iF_EnableLatch;
 		
 		this.numOfIns = 0;
+		this.numOfNops = 0;
 	}
 	
 	public void performRW()
@@ -31,6 +33,7 @@ public class RegisterWrite {
 			
 			if (MA_RW_Latch.isNop()) {
 				MA_RW_Latch.setRW_enable(false);
+				numOfNops++;
 				return;
 			}
 			
@@ -94,6 +97,10 @@ public class RegisterWrite {
 	public int getNumofInstructions() {
 		return numOfIns;
 	
+	}
+
+	public int getNumofNops() {
+		return numOfNops;
 	}
 	
 }

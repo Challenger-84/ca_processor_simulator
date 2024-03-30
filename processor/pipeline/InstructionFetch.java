@@ -71,8 +71,8 @@ public class InstructionFetch implements Element {
 				EX_IF_Latch.setBranchTaken(false);
 				branchTaken = true;
 				
-				Statistics stats = new Statistics();
-				stats.incrementNumberOfNops(1);
+				// Statistics stats = new Statistics();
+				// stats.incrementNumberOfNops(1);
 				
 				int newPC = EX_IF_Latch.branchTarget();
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);
