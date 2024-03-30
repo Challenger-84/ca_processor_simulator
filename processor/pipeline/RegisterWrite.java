@@ -36,9 +36,7 @@ public class RegisterWrite {
 				numOfNops++;
 				return;
 			}
-			
-			System.out.println("RW Ins: " + MA_RW_Latch.instruction);
-			
+
 			numOfIns++;
 			
 			// End simulation if instruction is end

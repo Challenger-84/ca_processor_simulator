@@ -40,7 +40,6 @@ public class Execute implements Element{
 			EX_MA_Latch.setNop(false);
 			
 			if (OF_EX_Latch.isEXBusy() || OF_EX_Latch.isNop()) {
-				//System.out.println("EX Ins: (BUSY) " + OF_EX_Latch.getInstruction());
 				EX_MA_Latch.setNop(true);
 				EX_MA_Latch.setMA_enable(true);
 				return;
@@ -53,7 +52,6 @@ public class Execute implements Element{
 				OF_EX_Latch.setEXWaiting(false);
 			}
 				
-			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
 			
 			
 			ControlSignals control = OF_EX_Latch.getControl();
@@ -122,7 +120,6 @@ public class Execute implements Element{
 			EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
 			EX_MA_Latch.setControlSignals(control);
 			EX_MA_Latch.setMA_enable(false);
-			//EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
 			
 			ArithmeticLogicUnit(control.getALUSignals(), op1, op2);
 			

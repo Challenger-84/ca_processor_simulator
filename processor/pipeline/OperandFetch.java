@@ -38,9 +38,6 @@ public class OperandFetch {
 				return;
 			}
 			
-			
-			//System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
-			
 			if (EX_OF_Latch.isBranchTaken() || IF_OF_Latch.isNop()) {
 				sendNop();
 				EX_OF_Latch.setBranchTaken(false);
@@ -49,12 +46,6 @@ public class OperandFetch {
 			
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
-			
-			if (instruction == 0) {
-				System.out.println("hi");
-			}
-			
-			System.out.println("OF Ins: " + instruction);
 			
 			String inst_string = Integer.toBinaryString(instruction);
 			if (inst_string.length() != 32) {
@@ -82,7 +73,6 @@ public class OperandFetch {
 			int offset;
 			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
 
-			// what if ubranch where rd value is used ?? check ://
 
 			//jmp, offset = rd+imm
 			if (control.isUBranch()) {
@@ -224,8 +214,6 @@ public class OperandFetch {
 	}
 	
 	private void sendNop() {
-		// Statistics stats = new Statistics();
-		// stats.incrementNumberOfNops(1);
 		
 		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 		OF_EX_Latch.setOp1(0);

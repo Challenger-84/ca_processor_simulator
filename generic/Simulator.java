@@ -60,7 +60,6 @@ public class Simulator {
 	{
 		while(simulationComplete == false)
 		{
-			System.out.println("Cycle : " + (Clock.getCurrentTime() + 1 + "----------------------------------"));
 			processor.getIFUnit().performBranch();
 			processor.getRWUnit().performRW();
 			processor.getMAUnit().performMA();

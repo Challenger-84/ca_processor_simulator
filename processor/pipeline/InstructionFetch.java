@@ -2,7 +2,6 @@ package processor.pipeline;
 
 import processor.Processor;
 import processor.Clock;
-import generic.Statistics;
 import generic.Simulator;
 import configuration.Configuration;
 
@@ -58,9 +57,6 @@ public class InstructionFetch implements Element {
 			
 			IF_EnableLatch.setIFBusy(true);
 			
-			//IF_EnableLatch.setIF_enable(false);
-			//IF_OF_Latch.setOF_enable(true);
-			
 		}
 	}
 	
@@ -72,9 +68,6 @@ public class InstructionFetch implements Element {
 				
 				EX_IF_Latch.setBranchTaken(false);
 				branchTaken = true;
-				
-				// Statistics stats = new Statistics();
-				// stats.incrementNumberOfNops(1);
 				
 				int newPC = EX_IF_Latch.branchTarget();
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);
@@ -107,8 +100,6 @@ public class InstructionFetch implements Element {
 					return;
 				}
 				MemoryResponseEvent event = (MemoryResponseEvent) e;
-				
-				System.out.println("instruction: " + event.getValue());
 				
 				IF_OF_Latch.setInstruction(event.getValue());
 				IF_OF_Latch.setNop(false);

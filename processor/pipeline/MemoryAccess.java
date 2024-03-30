@@ -37,8 +37,6 @@ public class MemoryAccess implements Element {
 				return;
 			}
 			
-			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
-			
 			MA_RW_Latch.setNop(EX_MA_Latch.isNop());
 			if (EX_MA_Latch.isNop()) {
 				MA_RW_Latch.setRW_enable(true);
@@ -56,10 +54,6 @@ public class MemoryAccess implements Element {
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
 				
-				//int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
-				//MA_RW_Latch.setLoadResult(ldResult);
-
-				//
 				Simulator.getEventQueue().addEvent(
 					new MemoryReadEvent(
 							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
@@ -72,7 +66,6 @@ public class MemoryAccess implements Element {
 			}
 			else if (EX_MA_Latch.controlSignals().isSt()) {
 			
-				//containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
 				
 				Simulator.getEventQueue().addEvent(
 					new MemoryWriteEvent(
