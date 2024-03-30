@@ -4,7 +4,6 @@ import configuration.Configuration;
 import generic.Simulator;
 
 import processor.Processor;
-import generic.Simulator;
 
 // Importing classes related to Events
 import generic.Element;
@@ -38,17 +37,13 @@ public class MemoryAccess implements Element {
 				return;
 			}
 			
-<<<<<<< HEAD
-=======
 			
->>>>>>> d15df27ca5bebf18a0447b43cd9606de8c53c98e
 			MA_RW_Latch.setNop(EX_MA_Latch.isNop());
 			if (EX_MA_Latch.isNop()) {
 				MA_RW_Latch.setRW_enable(true);
 				return;
 			}
 			
-			System.out.println("MA Ins: " + EX_MA_Latch.getInstruction());
 			
 			// Passing all the other values to Latch
 			MA_RW_Latch.setControlSignals(EX_MA_Latch.controlSignals());

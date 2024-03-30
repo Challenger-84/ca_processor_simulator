@@ -2,8 +2,6 @@ package generic;
 
 import processor.Clock;
 import processor.Processor;
-import generic.Statistics;
-import generic.EventQueue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,7 +69,6 @@ public class Simulator {
 			
 		}
 		
-		// TODO
 		// set statistics
 		Statistics stats = new Statistics();
 		stats.setNumberOfCycles((int) Clock.getCurrentTime());

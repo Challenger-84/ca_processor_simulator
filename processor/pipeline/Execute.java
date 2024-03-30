@@ -121,9 +121,7 @@ public class Execute implements Element{
 			EX_MA_Latch.setPC(OF_EX_Latch.getPC());
 			EX_MA_Latch.setInstruction(OF_EX_Latch.getInstruction());
 			EX_MA_Latch.setControlSignals(control);
-			//EX_MA_Latch.setMA_enable(false);
-			//EX_MA_Latch.setALUResult(ArithmeticLogicUnit(control.getALUSignals(), op1, op2));
-			
+
 			ArithmeticLogicUnit(control.getALUSignals(), op1, op2);
 			
 			

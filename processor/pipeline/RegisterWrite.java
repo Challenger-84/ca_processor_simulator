@@ -32,7 +32,6 @@ public class RegisterWrite {
 			}
 			
 			if (MA_RW_Latch.isNop()) {
-				//System.out.println("Nop");
 				MA_RW_Latch.setRW_enable(false);
 				numOfNops++;
 				return;
