@@ -32,6 +32,8 @@ public class MemoryAccess implements Element {
 		if (EX_MA_Latch.isMA_enable()) {
 			
 			if (EX_MA_Latch.isMABusy()) {
+				MA_RW_Latch.setNop(true);
+				MA_RW_Latch.setRW_enable(true);
 				return;
 			}
 			
@@ -109,6 +111,7 @@ public class MemoryAccess implements Element {
 				MA_RW_Latch.setLoadResult(event.getValue());
 			}
 			
+			MA_RW_Latch.setNop(false);
 			MA_RW_Latch.setRW_enable(true);
 			EX_MA_Latch.setMABusy(false);
 		}

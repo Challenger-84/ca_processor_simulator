@@ -5,7 +5,9 @@ import generic.ControlSignals;
 public class OF_EX_LatchType {
 	
 	boolean EX_enable;
+	
 	boolean EX_busy;
+	boolean EX_waiting_on_MA;
 	
 	int pc;
 	int instruction;
@@ -30,6 +32,22 @@ public class OF_EX_LatchType {
 	public void setEX_enable(boolean eX_enable) {
 		EX_enable = eX_enable;
 	}
+	
+	public boolean isEXBusy() {
+        return EX_busy;
+    }
+
+    public void setEXBusy(boolean isEX_busy) {
+        this.EX_busy = isEX_busy;
+    }
+    
+    public boolean isEXWaiting() {
+        return EX_waiting_on_MA;
+    }
+
+    public void setEXWaiting(boolean value) {
+        this.EX_waiting_on_MA = value;
+    }
 
 	public int getPC() {
         return pc;
@@ -87,13 +105,6 @@ public class OF_EX_LatchType {
 		this.control = control;
 	}
 	
-    public boolean isEXBusy() {
-        return EX_busy;
-    }
-
-    public void setEXBusy(boolean isMA_busy) {
-        this.EX_busy = isMA_busy;
-    }
     
     public boolean isNop() {
     	return isNop;

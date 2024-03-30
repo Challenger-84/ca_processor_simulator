@@ -30,9 +30,11 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
-			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
+			// OF is set to busy if EX is busy or waiting for MA
+			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy() || OF_EX_Latch.isEXWaiting());
 
 			if (IF_OF_Latch.isOFBusy()) {
+				OF_EX_Latch.setEX_enable(true);
 				return;
 			}
 			

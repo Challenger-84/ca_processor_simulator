@@ -37,19 +37,22 @@ public class Execute implements Element{
 	{
 		if (OF_EX_Latch.isEX_enable()) {
 			
+			EX_MA_Latch.setNop(false);
 			
-			if (OF_EX_Latch.isEXBusy()) {
-				System.out.println("EX Ins: (BUSY) " + OF_EX_Latch.getInstruction());
-				return;
-			}
-			
-			EX_MA_Latch.setNop(OF_EX_Latch.isNop());
-			
-			if (OF_EX_Latch.isNop()) {
+			if (OF_EX_Latch.isEXBusy() || OF_EX_Latch.isNop()) {
+				//System.out.println("EX Ins: (BUSY) " + OF_EX_Latch.getInstruction());
+				EX_MA_Latch.setNop(true);
 				EX_MA_Latch.setMA_enable(true);
 				return;
 			}
 			
+			if (EX_MA_Latch.isMABusy()) {
+				OF_EX_Latch.setEXWaiting(true);
+				return;
+			}  else {
+				OF_EX_Latch.setEXWaiting(false);
+			}
+				
 			System.out.println("EX Ins: " + OF_EX_Latch.getInstruction());
 			
 			
@@ -230,6 +233,7 @@ public class Execute implements Element{
 			ExecutionCompleteEvent event = (ExecutionCompleteEvent) e;
 			
 			EX_MA_Latch.setALUResult(event.getALUResult());
+			EX_MA_Latch.setNop(false);
 			EX_MA_Latch.setMA_enable(true);
 			
 			OF_EX_Latch.setEXBusy(false);
