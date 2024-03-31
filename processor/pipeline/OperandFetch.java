@@ -30,16 +30,18 @@ public class OperandFetch {
 	{
 		if(IF_OF_Latch.isOF_enable())
 		{
-			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy());
+			// OF is set to busy if EX is busy or waiting for MA
+			IF_OF_Latch.setOFBusy(OF_EX_Latch.isEXBusy() || OF_EX_Latch.isEXWaiting());
 
 			if (IF_OF_Latch.isOFBusy()) {
+				OF_EX_Latch.setEX_enable(true);
+				IF_EnableLatch.setIF_enable(false);
 				return;
 			}
 			
 			
-			//System.out.println("register locks:" + containingProcessor.getRegisterLock(3));
-			
 			if (EX_OF_Latch.isBranchTaken() || IF_OF_Latch.isNop()) {
+				// If branchTaken or received a nop send a nop
 				sendNop();
 				EX_OF_Latch.setBranchTaken(false);
 				return;
@@ -48,18 +50,20 @@ public class OperandFetch {
 			int currentPC = IF_OF_Latch.getPC();
 			int instruction = IF_OF_Latch.getInstruction();
 			
+			
 			System.out.println("OF Ins: " + instruction);
 			
 			String inst_string = Integer.toBinaryString(instruction);
+			
+			// Make Instruction binary string as 32 length
 			if (inst_string.length() != 32) {
 				inst_string = "0".repeat(32-inst_string.length()) + inst_string;
 			}
 			
-			//5bit to control unit 
+			//5bit to control unit to get control signals
 			int opcode = Integer.parseInt(inst_string.substring(0,5), 2);
-			
-			// get control signals from control unit
 			ControlSignals control = control_unit.getControlSignals(opcode);
+			
 			
 			//imm operations
 			String immx_18 = inst_string.substring(15);
@@ -70,33 +74,29 @@ public class OperandFetch {
 			else{
 				immx_32 = "1".repeat(32-17) + immx_18;
 			} 
-			int immx = Integer.parseUnsignedInt(immx_32, 2);
+			int imm = Integer.parseUnsignedInt(immx_32, 2);
 	
 			//branchTarget
-			int offset;
+			int offset = imm;
 			int rd = Integer.parseInt(inst_string.substring(5,10), 2);
 
 			// what if ubranch where rd value is used ?? check ://
 
-			//jmp, offset = rd+imm
+			// if jmp, offset = rd+imm
 			if (control.isUBranch()) {
 				String offset_str = inst_string.substring(10);
-				String offset_32;
 				if(offset_str.charAt(0)== '0'){
-					offset_32 = "0".repeat(10) + offset_str;
+					offset_str = "0".repeat(10) + offset_str;
 				}
 				else{
-					offset_32 = "1".repeat(10) + offset_str;
+					offset_str = "1".repeat(10) + offset_str;
 				} 
-				offset = Integer.parseUnsignedInt(offset_32, 2);
-				if(containingProcessor.getRegisterLock(rd) == 0){
+				offset = Integer.parseUnsignedInt(offset_str, 2);
+				
+				// If rd is not 0 then add that to offset
+				if(containingProcessor.getRegisterLock(rd) == 0 && rd != 0){
 					offset += containingProcessor.getRegisterFile().getValue(rd);
-				}else{
-					offset = 0;
 				}
-
-			} else {
-				offset = immx;
 			}
 
 			int branchTarget = offset + currentPC;
@@ -107,8 +107,6 @@ public class OperandFetch {
 
 			int rs1 = Integer.parseUnsignedInt(rs1String, 2);
 			int rs2 = Integer.parseUnsignedInt(rs2String, 2);
-			int op1;
-			int op2;
 			
 			if (operand_locked) {
 				Statistics stats = new Statistics();
@@ -119,79 +117,46 @@ public class OperandFetch {
 				}
 				return;
 			}
-			
-			int rd_address;
+
 			String rdString;
 			if (control.isImmediate()) {
 				rdString = inst_string.substring(10,15);
 			} else {
 				rdString = inst_string.substring(15,20);
 			}
-			rd_address = Integer.parseInt(rdString, 2);
+			int rd_address = Integer.parseInt(rdString, 2);
 
+			int op1;
+			int op2;
 			
-			if (control.isSt()) {
-				if (containingProcessor.getRegisterLock(rs1) == 0 && containingProcessor.getRegisterLock(rs2) == 0) {
-					op1 = containingProcessor.getRegisterFile().getValue(rs1);
-					op2 = containingProcessor.getRegisterFile().getValue(rs2);
-					
-					// Setting the next Latch
-					OF_EX_Latch.setPC(IF_OF_Latch.getPC());
-					OF_EX_Latch.setOp1(op1);
-					OF_EX_Latch.setOp2(op2);
-					OF_EX_Latch.setBranchTarget(branchTarget);
-					OF_EX_Latch.setImmx(immx);
-					OF_EX_Latch.setControl(control);
-					OF_EX_Latch.setInstruction(instruction);
-					
-					IF_EnableLatch.setIF_enable(true);
-					IF_OF_Latch.setOF_enable(false);
-				} else {
-					operand_locked = true;
-					
-					IF_EnableLatch.setIF_enable(false);//disable IF unit
-					IF_OF_Latch.setOF_enable(true);
-					sendNop();
-					Statistics stats = new Statistics();
-					stats.incrementNumOfDataHazards(1);
-					
-					OF_EX_Latch.setEX_enable(true);
-					
-					return;
-				}
+			if(containingProcessor.getRegisterLock(rs1) == 0 && ((control.isImmediate() && !control.isSt()) || containingProcessor.getRegisterLock(rs2) == 0)){
+				op1 = containingProcessor.getRegisterFile().getValue(rs1);
+				op2 = containingProcessor.getRegisterFile().getValue(rs2);
+				
+				// Setting the next Latch
+				OF_EX_Latch.setPC(IF_OF_Latch.getPC());
+				OF_EX_Latch.setOp1(op1);
+				OF_EX_Latch.setOp2(op2);
+				OF_EX_Latch.setBranchTarget(branchTarget);
+				OF_EX_Latch.setImmx(imm);
+				OF_EX_Latch.setControl(control);
+				OF_EX_Latch.setInstruction(instruction);
+				
 			}
-			else {
-				if(containingProcessor.getRegisterLock(rs1) == 0 && (control.isImmediate() || containingProcessor.getRegisterLock(rs2) == 0)){
-					op1 = containingProcessor.getRegisterFile().getValue(rs1);
-					op2 = containingProcessor.getRegisterFile().getValue(rs2);
-					
-					// Setting the next Latch
-					OF_EX_Latch.setPC(IF_OF_Latch.getPC());
-					OF_EX_Latch.setOp1(op1);
-					OF_EX_Latch.setOp2(op2);
-					OF_EX_Latch.setBranchTarget(branchTarget);
-					OF_EX_Latch.setImmx(immx);
-					OF_EX_Latch.setControl(control);
-					OF_EX_Latch.setInstruction(instruction);
-					
-					IF_EnableLatch.setIF_enable(true);
-					IF_OF_Latch.setOF_enable(false);
-				}
-				else{
-					// passing add %x0 %x0 %x0 (nop)
-					operand_locked = true;
-					
-					sendNop();
-					Statistics stats = new Statistics();
-					stats.incrementNumOfDataHazards(1);
-					IF_EnableLatch.setIF_enable(false);//disable IF unit
-					IF_OF_Latch.setOF_enable(true);
-					
-					OF_EX_Latch.setEX_enable(true);
-					
-					return;
+			else{
+				// passing add %x0 %x0 %x0 (nop)
+				operand_locked = true;
+				
+				sendNop();
+				Statistics stats = new Statistics();
+				stats.incrementNumOfDataHazards(1);
+				IF_EnableLatch.setIF_enable(false);//disable IF unit
+				IF_OF_Latch.setOF_enable(true);
+				
+				OF_EX_Latch.setEX_enable(true);
+				
+				return;
 
-				}
 			}
 
 			
@@ -211,6 +176,9 @@ public class OperandFetch {
 				IF_EnableLatch.setIF_enable(false);//disable IF unit
 			}
 			
+			IF_EnableLatch.setIF_enable(true);
+			IF_OF_Latch.setOF_enable(false);
+			
 			OF_EX_Latch.setNop(false);
 			OF_EX_Latch.setEX_enable(true);
 			
@@ -218,8 +186,6 @@ public class OperandFetch {
 	}
 	
 	private void sendNop() {
-		Statistics stats = new Statistics();
-		stats.incrementNumberOfNops(1);
 		
 		OF_EX_Latch.setPC(IF_OF_Latch.getPC());
 		OF_EX_Latch.setOp1(0);

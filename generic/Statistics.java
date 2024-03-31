@@ -48,7 +48,7 @@ public class Statistics {
 	public void setNumberOfCycles(int numberOfCycles) {
 		Statistics.numberOfCycles = numberOfCycles;
 	}
-
+	
 	public void incrementNumberOfNops(int numberOfNops) {
 		Statistics.numberOfNops += numberOfNops;
 	}

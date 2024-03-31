@@ -20,7 +20,6 @@ public class InstructionFetch implements Element {
 	IF_OF_LatchType IF_OF_Latch;
 	EX_IF_LatchType EX_IF_Latch;
 	
-	int numOfIns;
 	boolean branchTaken;
 	
 	public InstructionFetch(Processor containingProcessor, IF_EnableLatchType iF_EnableLatch, IF_OF_LatchType iF_OF_Latch, EX_IF_LatchType eX_IF_Latch)
@@ -30,7 +29,6 @@ public class InstructionFetch implements Element {
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.EX_IF_Latch = eX_IF_Latch;
 		
-		this.numOfIns = 0;
 		branchTaken = false;
 	}
 	
@@ -40,6 +38,8 @@ public class InstructionFetch implements Element {
 		{	
 			
 			if (IF_EnableLatch.isIFBusy()) {
+				IF_OF_Latch.setNop(true);
+				IF_OF_Latch.setOF_enable(true);
 				return;
 			}
 			
@@ -54,15 +54,10 @@ public class InstructionFetch implements Element {
 			
 			IF_OF_Latch.setPC(currentPC);
 			
-			containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
-			
-			numOfIns++;
-			
-			IF_OF_Latch.setNop(false);
 			IF_EnableLatch.setIFBusy(true);
+			IF_OF_Latch.setOF_enable(true);
+			IF_OF_Latch.setNop(true);
 			
-			//IF_EnableLatch.setIF_enable(false);
-			//IF_OF_Latch.setOF_enable(true);
 			
 		}
 	}
@@ -73,21 +68,16 @@ public class InstructionFetch implements Element {
 		{	
 			if (EX_IF_Latch.isBranchTaken()) {
 				
+				EX_IF_Latch.setBranchTaken(false);
 				branchTaken = true;
 				
-				Statistics stats = new Statistics();
-				stats.incrementNumberOfNops(1);
 				
 				int newPC = EX_IF_Latch.branchTarget();
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);
 				
 				IF_OF_Latch.setInstruction(0);
-				IF_OF_Latch.setNop(true);
 				IF_OF_Latch.setPC(newPC);
 				
-				
-				// If we take branch that means 2 wrong instructions came in
-				numOfIns -= 2;
 				
 				EX_IF_Latch.setIF_enable(false);
 			}
@@ -98,15 +88,17 @@ public class InstructionFetch implements Element {
 	
 	@Override
 	public void handleEvent(Event e) {
-		if (IF_OF_Latch.isOFBusy()) {
+		if (IF_OF_Latch.isOFBusy() || !IF_EnableLatch.isIF_enable()) {
 			e.setEventTime(Clock.getCurrentTime() + 1);
 			Simulator.getEventQueue().addEvent(e);
+			IF_EnableLatch.setIF_enable(true);
 		} 
 		else 
 		{
 			if (e.getEventType() == Event.EventType.MemoryResponse) {
 				if (branchTaken) {
 					IF_OF_Latch.setOF_enable(true);
+					IF_OF_Latch.setNop(true);
 					IF_EnableLatch.setIFBusy(false);
 					branchTaken = false;
 					return;
@@ -115,15 +107,15 @@ public class InstructionFetch implements Element {
 				
 				System.out.println("instruction: " + event.getValue());
 				
+				containingProcessor.getRegisterFile().setProgramCounter(IF_OF_Latch.getPC() + 1);
+				
 				IF_OF_Latch.setInstruction(event.getValue());
+				IF_OF_Latch.setNop(false);
 				IF_OF_Latch.setOF_enable(true);
 				IF_EnableLatch.setIFBusy(false);
 			}
 		}	
 	}
 	
-	public int getNumofInstructions() {
-		return numOfIns;
-	}
 
 }
