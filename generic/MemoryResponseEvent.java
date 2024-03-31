@@ -3,12 +3,14 @@ package generic;
 public class MemoryResponseEvent extends Event {
 
 	int value;
+	int address;
 	boolean writeFinished;
 	
-	public MemoryResponseEvent(long eventTime, Element requestingElement, Element processingElement, int value, boolean writeFinished) {
+	public MemoryResponseEvent(long eventTime, Element requestingElement, Element processingElement, int value, int addr ,boolean writeFinished) {
 		super(eventTime, EventType.MemoryResponse, requestingElement, processingElement);
 		this.value = value;
 		this.writeFinished = writeFinished;
+		this.address = addr;
 	}
 
 	public int getValue() {
@@ -25,6 +27,10 @@ public class MemoryResponseEvent extends Event {
 	
 	public void setWriteFinished(boolean writeFinished) {
 		this.writeFinished = writeFinished;
+	}
+	
+	public int getAddr() {
+		return address;
 	}
 	
 }
