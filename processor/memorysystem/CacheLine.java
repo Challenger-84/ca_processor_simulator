@@ -10,11 +10,11 @@ public class CacheLine {
 	
 	int LRU_Counter;
 	
-	public CacheLine(int tag, int[] data) {
+	public CacheLine(int tag, int[] data, boolean valid) {
 		
 		this.tag = tag;
 		this.data = data;
-		this.valid_bit = true;
+		this.valid_bit = valid;
 		this.LRU_Counter = Integer.MAX_VALUE;
 		
 	}
@@ -28,7 +28,9 @@ public class CacheLine {
 	}
 	
 	public void decrementLRU() {
-		LRU_Counter -= 1;
+		if (LRU_Counter > 0) {
+			LRU_Counter -= 1;			
+		}
 	}
 	
 }

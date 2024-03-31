@@ -1,7 +1,5 @@
 package processor.memorysystem;
 
-import javax.sound.sampled.Line;
-
 import configuration.Configuration;
 import generic.DecrementLRUEvent;
 import generic.Element;
@@ -19,12 +17,15 @@ import generic.MemoryResponseEvent;
 public class Cache implements Element{
 	
 	Processor containingProcessor;
-	CacheLine[] cache_array;
+	private CacheLine[] cache_array;
 	int LRU_decrement_interval = 20;
 	
 	public Cache(Processor containingProcessor, int size) {
 		this.containingProcessor = containingProcessor;
 		cache_array = new CacheLine[size];
+		for (int i = 0; i < size; i++) { 
+			cache_array[i] = new CacheLine(0, new int[] {0}, false);
+		}
 	}
 	
 	private int[] searchCache(int maddr) {
@@ -39,9 +40,9 @@ public class Cache implements Element{
 		int[] result = {0, 0};
 		
 		for (CacheLine line : cache_array) {
-			if (line.tag == maddr) {
+			if (line.tag == maddr && line.isValid()) {
 				result = new int[] {1, line.data[0]};
-			}
+			}				
 		}
 		
 		return result;
@@ -60,11 +61,10 @@ public class Cache implements Element{
 	
 	public void handleEvent(Event e) {
 		
-		EventType eventType = e.getEventType();
-		if (eventType == EventType.MemoryResponse) {
+		if (e.getEventType() == EventType.MemoryResponse) {
 			MemoryResponseEvent event = (MemoryResponseEvent) e;
 			
-			CacheLine new_line = new CacheLine(event.getAddr(), new int []{event.getValue()});
+			CacheLine new_line = new CacheLine(event.getAddr(), new int []{event.getValue()}, true);
 			int empty_index = getEmptyCacheLine();
 			if (empty_index >= 0) {
 				cache_array[empty_index] = new_line;
@@ -72,17 +72,36 @@ public class Cache implements Element{
 				cache_array[LRU()] = new_line;				
 			}
 		}
-		else if (eventType == EventType.DecrementLRU) {
+		else if (e.getEventType() == EventType.DecrementLRU) {
 			updateLRU();
 		}
 		
 		return;
 	}
 	
+	
+	private int getEmptyCacheLine() {
+		/*
+		 * This function returns the index of an empty cacheline, if it doesn't exist it returns -1
+		 */
+		
+		int index = -1;
+			
+		for (int i = 0; i < cache_array.length; i++) {
+			if (!cache_array[i].isValid()){
+				index = i;
+				break;
+			}
+		}
+		
+		return index;
+	}
+	
 	private int LRU() {
 		/*
 		 * This function returns the index in cache_array with the least LRU (that is least recently used)
 		 */
+		
 		
 		int index = 0;
 		int min_val = 0;
@@ -97,24 +116,10 @@ public class Cache implements Element{
 		return index;
 	}
 	
-	private int getEmptyCacheLine() {
-		/*
-		 * This function returns the index of an empty cacheline, if it doesn't exist it returns -1
-		 */
-		
-		int index = -1;
-			
-		for (int i = 0; i < cache_array.length; i++) {
-			if (cache_array[i].isValid()){
-				index = i;
-				break;
-			}
-		}
-		
-		return index;
-	}
-	
 	public void updateLRU() {
+		/*
+		 * This function decrements the LRU of all the cache lines
+		 */
 		for (CacheLine cache_line : cache_array) {
 			cache_line.decrementLRU();
 		}

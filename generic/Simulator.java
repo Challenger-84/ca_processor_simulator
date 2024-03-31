@@ -58,6 +58,10 @@ public class Simulator {
 	
 	public static void simulate()
 	{
+		
+		processor.getL1d_Cache().updateLRU();		
+		processor.getL1i_Cache().updateLRU();	
+		
 		while(simulationComplete == false)
 		{
 			System.out.println("Cycle : " + (Clock.getCurrentTime() + 1 + "----------------------------------"));

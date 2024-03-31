@@ -1,5 +1,7 @@
 package processor;
 
+import configuration.Configuration;
+import processor.memorysystem.Cache;
 import processor.memorysystem.MainMemory;
 import processor.pipeline.EX_IF_LatchType;
 import processor.pipeline.EX_MA_LatchType;
@@ -19,6 +21,8 @@ public class Processor {
 	
 	RegisterFile registerFile;
 	MainMemory mainMemory;
+	Cache L1d_Cache;
+	Cache L1i_Cache;
 	
 	IF_EnableLatchType IF_EnableLatch;
 	IF_OF_LatchType IF_OF_Latch;
@@ -41,6 +45,8 @@ public class Processor {
 	{
 		registerFile = new RegisterFile();
 		mainMemory = new MainMemory();
+		L1d_Cache = new Cache(this, Configuration.L1d_numberOfLines);
+		L1i_Cache = new Cache(this, Configuration.L1i_numberOfLines);
 		
 		IF_EnableLatch = new IF_EnableLatchType();
 		IF_EnableLatch.setIF_enable(true);
@@ -80,9 +86,17 @@ public class Processor {
 	public MainMemory getMainMemory() {
 		return mainMemory;
 	}
-
+	
 	public void setMainMemory(MainMemory mainMemory) {
 		this.mainMemory = mainMemory;
+	}
+	
+	public Cache getL1d_Cache() {
+		return L1d_Cache;
+	}
+	
+	public Cache getL1i_Cache() {
+		return L1i_Cache;
 	}
 
 	public InstructionFetch getIFUnit() {
