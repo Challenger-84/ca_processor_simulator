@@ -54,13 +54,10 @@ public class InstructionFetch implements Element {
 			
 			IF_OF_Latch.setPC(currentPC);
 			
-			//containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
-			
 			IF_EnableLatch.setIFBusy(true);
 			IF_OF_Latch.setOF_enable(true);
 			IF_OF_Latch.setNop(true);
 			
-			//IF_EnableLatch.setIF_enable(false);
 			
 		}
 	}
@@ -74,8 +71,6 @@ public class InstructionFetch implements Element {
 				EX_IF_Latch.setBranchTaken(false);
 				branchTaken = true;
 				
-				// Statistics stats = new Statistics();
-				// stats.incrementNumberOfNops(1);
 				
 				int newPC = EX_IF_Latch.branchTarget();
 				containingProcessor.getRegisterFile().setProgramCounter(newPC);

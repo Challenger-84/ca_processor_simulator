@@ -32,7 +32,6 @@ public class RegisterWrite {
 			}
 			
 			if (MA_RW_Latch.isNop()) {
-				//System.out.println("Nop");
 				MA_RW_Latch.setRW_enable(false);
 				numOfNops++;
 				return;
@@ -44,7 +43,6 @@ public class RegisterWrite {
 			
 			// End simulation if instruction is end
 			if (MA_RW_Latch.controlSignals().isEnd()) {
-				System.out.println("ending!");
 				Simulator.setSimulationComplete(true);
 				return;
 			}
@@ -91,7 +89,6 @@ public class RegisterWrite {
 			}
 			
 			MA_RW_Latch.setRW_enable(false);
-			//IF_EnableLatch.setIF_enable(true);
 		}
 	}
 	

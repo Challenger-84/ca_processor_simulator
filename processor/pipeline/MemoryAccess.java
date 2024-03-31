@@ -42,6 +42,7 @@ public class MemoryAccess implements Element {
 			MA_RW_Latch.setNop(EX_MA_Latch.isNop());
 			if (EX_MA_Latch.isNop()) {
 				MA_RW_Latch.setRW_enable(true);
+				EX_MA_Latch.setMA_enable(false);
 				return;
 			}
 			
@@ -56,11 +57,7 @@ public class MemoryAccess implements Element {
 			MA_RW_Latch.setx31(EX_MA_Latch.getx31());
 			
 			if (EX_MA_Latch.controlSignals().isLd()) {
-				
-				//int ldResult = containingProcessor.getMainMemory().getWord(EX_MA_Latch.ALUResult());
-				//MA_RW_Latch.setLoadResult(ldResult);
 
-				//
 				Simulator.getEventQueue().addEvent(
 					new MemoryReadEvent(
 							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
@@ -69,12 +66,10 @@ public class MemoryAccess implements Element {
 							EX_MA_Latch.ALUResult())
 					);
 				EX_MA_Latch.setMABusy(true);
-				MA_RW_Latch.setRW_enable(true);
 				MA_RW_Latch.setNop(true);;
 			}
 			else if (EX_MA_Latch.controlSignals().isSt()) {
-			
-				//containingProcessor.getMainMemory().setWord(EX_MA_Latch.ALUResult(), EX_MA_Latch.storeVal());
+
 				
 				Simulator.getEventQueue().addEvent(
 					new MemoryWriteEvent(
@@ -86,14 +81,11 @@ public class MemoryAccess implements Element {
 							)
 					);
 				EX_MA_Latch.setMABusy(true);
-				MA_RW_Latch.setRW_enable(true);
 				MA_RW_Latch.setNop(true);
 			}
-			else{
-				MA_RW_Latch.setRW_enable(true);
-			}
+
 			
-			
+			MA_RW_Latch.setRW_enable(true);
 			EX_MA_Latch.setMA_enable(false);
 			
 		}
