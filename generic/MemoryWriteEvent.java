@@ -4,8 +4,9 @@ public class MemoryWriteEvent extends Event {
 
 	int addressToWriteTo;
 	int value;
+	Element requestingUnit;
 	
-	public MemoryWriteEvent(long eventTime, Element requestingElement, Element processingElement, int address, int value) {
+	public MemoryWriteEvent(long eventTime, Element requestingElement, Element processingElement, int address, int value, Element requestingUnit) {
 		super(eventTime, EventType.MemoryWrite, requestingElement, processingElement);
 		this.addressToWriteTo = address;
 		this.value = value;
@@ -25,5 +26,9 @@ public class MemoryWriteEvent extends Event {
 
 	public void setValue(int value) {
 		this.value = value;
+	}
+	
+	public Element getRequestingUnit() {
+		return requestingUnit;
 	}
 }

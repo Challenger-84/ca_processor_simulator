@@ -53,7 +53,8 @@ public class MainMemory implements Element{
 					event.getRequestingElement(),
 					getWord(addr),
 					addr,
-					false
+					false,
+					event.getRequestingUnit()
 					));
 			
 		} else if (e.getEventType() == Event.EventType.MemoryWrite) {
@@ -67,7 +68,8 @@ public class MainMemory implements Element{
 					event.getRequestingElement(),
 					event.getValue(),
 					addr,
-					true
+					true,
+					event.getRequestingUnit()
 					));
 		}
 	}

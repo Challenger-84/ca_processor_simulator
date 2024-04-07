@@ -6,10 +6,10 @@ import generic.Simulator;
 import configuration.Configuration;
 
 // imports regarding events
+import generic.CacheReadEvent;
+import generic.CacheResponseEvent;
 import generic.Element;
 import generic.Event;
-import generic.MemoryReadEvent;
-import generic.MemoryResponseEvent;
 
 
 public class InstructionFetch implements Element {
@@ -44,10 +44,10 @@ public class InstructionFetch implements Element {
 			
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
 			
-			Simulator.getEventQueue().addEvent(new MemoryReadEvent(
-					Clock.getCurrentTime() + Configuration.mainMemoryLatency,
+			Simulator.getEventQueue().addEvent(new CacheReadEvent(
+					Clock.getCurrentTime() + Configuration.L1i_latency,
 					this,
-					containingProcessor.getMainMemory(),
+					containingProcessor.getL1i_Cache(),
 					currentPC
 					));
 			
@@ -94,7 +94,7 @@ public class InstructionFetch implements Element {
 		} 
 		else 
 		{
-			if (e.getEventType() == Event.EventType.MemoryResponse) {
+			if (e.getEventType() == Event.EventType.CacheResponse) {
 				if (branchTaken) {
 					IF_OF_Latch.setOF_enable(true);
 					IF_OF_Latch.setNop(true);
@@ -102,7 +102,7 @@ public class InstructionFetch implements Element {
 					branchTaken = false;
 					return;
 				}
-				MemoryResponseEvent event = (MemoryResponseEvent) e;
+				CacheResponseEvent event = (CacheResponseEvent) e;
 				
 				System.out.println("instruction: " + event.getValue());
 				

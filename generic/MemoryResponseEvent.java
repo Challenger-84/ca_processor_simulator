@@ -1,16 +1,19 @@
 package generic;
 
+
 public class MemoryResponseEvent extends Event {
 
 	int value;
 	int address;
 	boolean writeFinished;
+	Element requestingUnit;
 	
-	public MemoryResponseEvent(long eventTime, Element requestingElement, Element processingElement, int value, int addr ,boolean writeFinished) {
+	public MemoryResponseEvent(long eventTime, Element requestingElement, Element processingElement, int value, int addr ,boolean writeFinished, Element requestingUnit) {
 		super(eventTime, EventType.MemoryResponse, requestingElement, processingElement);
 		this.value = value;
 		this.writeFinished = writeFinished;
 		this.address = addr;
+		this.requestingUnit = requestingUnit;
 	}
 
 	public int getValue() {
@@ -31,6 +34,10 @@ public class MemoryResponseEvent extends Event {
 	
 	public int getAddr() {
 		return address;
+	}
+	
+	public Element getRequestingUnit() {
+		return requestingUnit;
 	}
 	
 }

@@ -2,7 +2,7 @@ package processor.memorysystem;
 
 import configuration.Configuration;
 import generic.CacheReadEvent;
-import generic.CacheResponceEvent;
+import generic.CacheResponseEvent;
 import generic.CacheWriteEvent;
 import generic.DecrementLRUEvent;
 import generic.Element;
@@ -52,13 +52,14 @@ public class Cache implements Element{
 		return result;
 	}
 	
-	private void HandleCacheMiss(int tag) {
+	private void HandleCacheMiss(int tag, Element reqElement) {
 		
 		Simulator.getEventQueue().addEvent( new MemoryReadEvent(
 				Clock.getCurrentTime() + Configuration.mainMemoryLatency, 
 				this, 
 				containingProcessor.getMainMemory(), 
-				tag 
+				tag,
+				reqElement
 			));
 		
 	}
@@ -75,6 +76,15 @@ public class Cache implements Element{
 			} else {
 				cache_array[LRU()] = new_line;				
 			}
+			
+			Simulator.getEventQueue().addEvent(new CacheResponseEvent(
+					Clock.getCurrentTime(),
+					this,
+					event.getRequestingUnit(),
+					getCacheLine(searchCache(event.getAddr())[1]).data[0],
+					event.getAddr(),
+					false
+					));
 		}
 		else if (e.getEventType() == EventType.DecrementLRU) {
 			updateLRU();
@@ -157,7 +167,7 @@ public class Cache implements Element{
 
 	public void HandleCacheRead(CacheReadEvent event) {
 		if(searchCache(event.getAddressToReadFrom())[0] == 1){
-			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+			Simulator.getEventQueue().addEvent(new CacheResponseEvent(
 						Clock.getCurrentTime(),
 						this,
 						event.getRequestingElement(),
@@ -167,7 +177,7 @@ public class Cache implements Element{
 						));
 		}
 		else{
-			HandleCacheMiss(event.getAddressToReadFrom());
+			HandleCacheMiss(event.getAddressToReadFrom(), event.getRequestingElement());
 		}
 	}
 
@@ -175,29 +185,32 @@ public class Cache implements Element{
 		if(searchCache(event.getAddressToWriteTo())[0] == 1){
 			//index from searchCache, if present
 			setCacheLine(searchCache(event.getAddressToWriteTo())[1], event.getValue());
-			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+			Simulator.getEventQueue().addEvent(new CacheResponseEvent(
 						Clock.getCurrentTime(),
 						this,
 						event.getRequestingElement(),
 						0,
+						event.getAddressToWriteTo(),
 						true
 						));
 		}
 		else{
 			//index from lru ,if not presnet
 			setCacheLine(LRU(), event.getValue());
-			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+			Simulator.getEventQueue().addEvent(new CacheResponseEvent(
 						Clock.getCurrentTime(),
 						this,
 						event.getRequestingElement(),
 						0,
+						event.getAddressToWriteTo(),
 						true
 						));
 		}
+		//TODO Send MemoryWriteEvent
 	}
 
 	private void setCacheLine(int tag, int value){
-		cache_array[tag] = value;
+		cache_array[tag].data[0] = value;
 		cache_array[tag].setLRU();
 	}
 

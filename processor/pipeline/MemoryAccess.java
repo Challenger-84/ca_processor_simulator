@@ -63,7 +63,8 @@ public class MemoryAccess implements Element {
 							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
 							this,
 							containingProcessor .getMainMemory(),
-							EX_MA_Latch.ALUResult())
+							EX_MA_Latch.ALUResult(),
+							this)
 					);
 				EX_MA_Latch.setMABusy(true);
 				MA_RW_Latch.setNop(true);;
@@ -77,7 +78,8 @@ public class MemoryAccess implements Element {
 							this,
 							containingProcessor .getMainMemory(),
 							EX_MA_Latch.ALUResult(),
-							EX_MA_Latch.storeVal()
+							EX_MA_Latch.storeVal(),
+							this
 							)
 					);
 				EX_MA_Latch.setMABusy(true);
