@@ -183,4 +183,9 @@ public class Cache implements Element{
 		}
 	}
 
+	private void setCacheLine(int tag, int value){
+		cache_array[tag] = value;
+		cache_array[tag].setLRU();
+	}
+
 }
