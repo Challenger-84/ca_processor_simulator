@@ -36,19 +36,19 @@ public class Cache implements Element{
 		
 		/* 
 		 * This function returns an int array where the first element is either 1 or 0 indicating if the given memory address was present or not,
-		 * and the second element is the value of the memory address if present.
+		 * and the second element is the index of the memory address in cache (if present).
 		 */
 		
 		//TODO: Generalize for any line size (Right now it's for line size of 1)
 		
 		int[] result = {0, 0};
 		
-		for (CacheLine line : cache_array) {
-			if (line.tag == maddr && line.isValid()) {
-				result = new int[] {1, line.data[0]};
-			}				
+		for (int i = 0; i < cache_array.length; i++) {
+			if (cache_array[i].tag == maddr && cache_array[i].isValid()) {
+				result = new int[] {1, i};
+			}
 		}
-		
+
 		return result;
 	}
 	
@@ -142,6 +142,18 @@ public class Cache implements Element{
 				this
 				));
 	}
+	
+	private CacheLine getCacheLine(int index) {
+		if (index < cache_array.length)
+		{
+			cache_array[index].setLRU();
+			return cache_array[index];			
+			
+		} else {
+			System.out.println("Invalid index provided" + index);
+			return cache_array[0];
+		}
+	}
 
 	public void HandleCacheRead(CacheReadEvent event) {
 		if(searchCache(event.getAddressToReadFrom())[0] == 1){
@@ -149,7 +161,8 @@ public class Cache implements Element{
 						Clock.getCurrentTime(),
 						this,
 						event.getRequestingElement(),
-						searchCache(event.getCacheLine(searchCache(event.getAddressToReadFrom())[1])),
+						getCacheLine(searchCache(event.getAddressToReadFrom())[1]).data[0],
+						event.getAddressToReadFrom(),
 						false
 						));
 		}
@@ -159,9 +172,9 @@ public class Cache implements Element{
 	}
 
 	public void HandleCacheWrite(CacheWriteEvent event){
-		if(searchCache(event.getAddressToReadFrom())[0] == 1){
+		if(searchCache(event.getAddressToWriteTo())[0] == 1){
 			//index from searchCache, if present
-			setCacheWrite(searchCache(event.getAddressToReadFrom())[1], event.getValue());
+			setCacheLine(searchCache(event.getAddressToWriteTo())[1], event.getValue());
 			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
 						Clock.getCurrentTime(),
 						this,
@@ -172,7 +185,7 @@ public class Cache implements Element{
 		}
 		else{
 			//index from lru ,if not presnet
-			setCacheWrite(LRU(), event.getValue());
+			setCacheLine(LRU(), event.getValue());
 			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
 						Clock.getCurrentTime(),
 						this,
