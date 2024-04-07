@@ -59,8 +59,6 @@ public class Simulator {
 	public static void simulate()
 	{
 		
-		processor.getL1d_Cache().updateLRU();		
-		processor.getL1i_Cache().updateLRU();	
 		
 		while(simulationComplete == false)
 		{

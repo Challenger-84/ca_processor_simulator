@@ -28,6 +28,9 @@ public class CacheLine {
 	}
 	
 	public void decrementLRU() {
+		/*
+		 * This function decrements LRU_Counter by 1 until it reaches 0
+		 */
 		if (LRU_Counter > 0) {
 			LRU_Counter -= 1;			
 		}
