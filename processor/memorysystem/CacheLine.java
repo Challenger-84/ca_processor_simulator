@@ -36,4 +36,11 @@ public class CacheLine {
 		}
 	}
 	
+	public void setLRU() {
+		/*
+		 * This function sets the LRU value to MAX Integer value
+		 */
+		LRU_Counter = Integer.MAX_VALUE;
+	}
+	
 }

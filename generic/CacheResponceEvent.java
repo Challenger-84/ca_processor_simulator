@@ -6,7 +6,7 @@ public class CacheResponceEvent extends Event{
 	int address;
 	boolean writeFinished;
 	
-	public CacheReadEvent(long eventTime, Element requestingElement, Element processingElement, int value, int addr ,boolean writeFinished) {
+	public CacheResponceEvent(long eventTime, Element requestingElement, Element processingElement, int value, int addr ,boolean writeFinished) {
 		super(eventTime, EventType.CacheResponse, requestingElement, processingElement);
 		this.value = value;
 		this.writeFinished = writeFinished;
