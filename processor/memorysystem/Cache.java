@@ -1,6 +1,9 @@
 package processor.memorysystem;
 
 import configuration.Configuration;
+import generic.CacheReadEvent;
+import generic.CacheResponceEvent;
+import generic.CacheWriteEvent;
 import generic.DecrementLRUEvent;
 import generic.Element;
 import processor.Clock;
@@ -12,6 +15,7 @@ import generic.Event;
 import generic.Event.EventType;
 import generic.MemoryReadEvent;
 import generic.MemoryResponseEvent;
+import generic.MemoryWriteEvent;
 
 
 public class Cache implements Element{
@@ -75,6 +79,14 @@ public class Cache implements Element{
 		else if (e.getEventType() == EventType.DecrementLRU) {
 			updateLRU();
 		}
+		else if (e.getEventType() == EventType.CacheRead){
+			CacheReadEvent event = (CacheReadEvent) e;
+			HandleCacheRead(event);
+		}
+		else if (e.getEventType() == Event.EventType.CacheWrite) {
+			CacheWriteEvent event = (CacheWriteEvent) e;
+			HandleCacheWrite(event);
+		}
 		
 		return;
 	}
@@ -130,4 +142,45 @@ public class Cache implements Element{
 				this
 				));
 	}
+
+	public void HandleCacheRead(CacheReadEvent event) {
+		if(searchCache(event.getAddressToReadFrom())[0] == 1){
+			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+						Clock.getCurrentTime(),
+						this,
+						event.getRequestingElement(),
+						searchCache(event.getCacheLine(searchCache(event.getAddressToReadFrom())[1])),
+						false
+						));
+		}
+		else{
+			HandleCacheMiss(event.getAddressToReadFrom());
+		}
+	}
+
+	public void HandleCacheWrite(CacheWriteEvent event){
+		if(searchCache(event.getAddressToReadFrom())[0] == 1){
+			//index from searchCache, if present
+			setCacheWrite(searchCache(event.getAddressToReadFrom())[1], event.getValue());
+			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+						Clock.getCurrentTime(),
+						this,
+						event.getRequestingElement(),
+						0,
+						true
+						));
+		}
+		else{
+			//index from lru ,if not presnet
+			setCacheWrite(LRU(), event.getValue());
+			Simulator.getEventQueue().addEvent(new CacheResponceEvent(
+						Clock.getCurrentTime(),
+						this,
+						event.getRequestingElement(),
+						0,
+						true
+						));
+		}
+	}
+
 }
