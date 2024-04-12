@@ -207,6 +207,15 @@ public class Cache implements Element{
 						));
 		}
 		//TODO Send MemoryWriteEvent
+		Simulator.getEventQueue().addEvent(
+					new MemoryWriteEvent(
+							Clock.getCurrentTime() + Configuration.mainMemoryLatency,
+							this,
+							event.getRequestingElement(),
+							event.getAddressToWriteTo(),
+							event.getValue()
+							)
+					);
 	}
 
 	private void setCacheLine(int tag, int value){
